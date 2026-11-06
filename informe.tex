@@ -1,0 +1,611 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[
+  spanish,
+  11pt,
+]{article}
+\usepackage{xcolor}
+\usepackage[a4paper, top=2.2cm, bottom=2.2cm, left=2.6cm, right=2.6cm]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{5}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+  \setmainfont[]{Source Serif Pro}
+  \setsansfont[Extension=.ttf,UprightFont=Lato-Regular,BoldFont=Lato-Bold,ItalicFont=Lato-Italic,BoldItalicFont=Lato-BoldItalic]{Lato}
+  \setmonofont[]{DejaVu Sans Mono}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{longtable,booktabs,array}
+\newcounter{none} % for unnumbered tables
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+% definitions for citeproc citations
+\NewDocumentCommand\citeproctext{}{}
+\NewDocumentCommand\citeproc{mm}{%
+  \begingroup\def\citeproctext{#2}\cite{#1}\endgroup}
+\makeatletter
+ % allow citations to break across lines
+ \let\@cite@ofmt\@firstofone
+ % avoid brackets around text for \cite:
+ \def\@biblabel#1{}
+ \def\@cite#1#2{{#1\if@tempswa , #2\fi}}
+\makeatother
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newenvironment{CSLReferences}[2] % #1 hanging-indent, #2 entry-spacing
+ {\begin{list}{}{%
+  \setlength{\itemindent}{0pt}
+  \setlength{\leftmargin}{0pt}
+  \setlength{\parsep}{0pt}
+  % turn on hanging indent if param 1 is 1
+  \ifodd #1
+   \setlength{\leftmargin}{\cslhangindent}
+   \setlength{\itemindent}{-1\cslhangindent}
+  \fi
+  % set entry spacing
+  \setlength{\itemsep}{#2\baselineskip}}}
+ {\end{list}}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{\hfill\break\parbox[t]{\linewidth}{\strut\ignorespaces#1\strut}}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
+\ifLuaTeX
+\usepackage[bidi=basic,shorthands=off]{babel}
+\else
+\usepackage[bidi=default,shorthands=off]{babel}
+\fi
+\ifPDFTeX
+\else
+\babelfont{rm}[]{Source Serif Pro}
+\fi
+\ifLuaTeX
+  \usepackage{selnolig} % disable illegal ligatures
+\fi
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+% ===== Paquetes =====
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage[most]{tcolorbox}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{float}          % opción [H]: fija la figura donde se declara
+\usepackage{enumitem}
+% Pandoc carga parskip ANTES de este preámbulo y parskip redefine \@starttoc;
+% eso hacía que tocloft se inhibiera ("tocloft bailing out") y el TOC perdiera
+% el formato institucional. Se restaura la definición del kernel y luego se carga tocloft.
+% (la definición debe coincidir token a token con la del kernel: \def, no
+%  \newcommand, porque tocloft la compara con \ifx)
+\makeatletter
+\def\@starttoc#1{%
+ \begingroup
+   \makeatletter
+   \@input{\jobname.#1}%
+   \if@filesw
+     \expandafter\newwrite\csname tf@#1\endcsname
+     \immediate\openout \csname tf@#1\endcsname \jobname.#1\relax
+   \fi
+  \@nobreakfalse
+\endgroup}
+\makeatother
+\usepackage{tocloft}
+\usepackage{parskip}          % espacio entre párrafos, sin sangría
+\usepackage{tikz}
+\usetikzlibrary{calc, positioning, arrows.meta, fit, backgrounds}
+
+% ===== Colores institucionales — Universidad Externado de Colombia =====
+% Tomados de la hoja de estilos vigente del sitio oficial (uexternado.edu.co,
+% tema WordPress "externado_theme" + pattern-lab-externado-prod), no de un
+% manual de marca publicado (no se localizó uno público con códigos Pantone).
+\definecolor{extVerde}{HTML}{4D7B19}      % verde institucional primario (bordes, acentos, enlaces)
+\definecolor{extVerdeClaro}{HTML}{78B92F} % verde secundario (enlaces sobre fondo oscuro, resaltes)
+\definecolor{extVerdeOscuro}{HTML}{00522C} % verde profundo (bandas, contraste fuerte)
+\definecolor{extDorado}{HTML}{E7A900}     % dorado/mostaza (del escudo/bandera institucional)
+\definecolor{extNegro}{HTML}{1A1A1A}
+\definecolor{extGris}{HTML}{58595B}       % gris neutro para texto secundario (no tomado del sitio;
+                                           % elección propia, análoga al rol de ipnGris)
+
+% Colores de apoyo para diagramas (armonizados con la paleta institucional)
+\definecolor{diagAzul}{HTML}{2F4B7C}
+\definecolor{diagDorado}{HTML}{B5810F}
+\definecolor{diagVerdeOscuro}{HTML}{00522C}
+
+% ===== Estilos de diagrama de flujo (genéricos, listos para usar) =====
+\tikzset{
+  paso/.style={
+    draw, rounded corners=3pt, line width=0.7pt,
+    text width=6.1cm, align=center, inner sep=6pt, font=\sffamily\small,
+  },
+  % (el título del paso se compone con \pasotitulo, definido abajo)
+  neutro/.style={paso, draw=extGris,       fill=extGris!7,       text=extNegro},
+  principal/.style={paso, draw=extVerde,   fill=extVerde!7,      text=extVerde},
+  secundario/.style={paso, draw=diagAzul,  fill=diagAzul!7,      text=diagAzul},
+  destacado/.style={paso, draw=diagDorado, fill=diagDorado!10,   text=diagDorado},
+  final/.style={paso, draw=diagVerdeOscuro, fill=diagVerdeOscuro!8, text=diagVerdeOscuro},
+  etapa/.style={font=\sffamily\footnotesize\bfseries, text=extNegro, anchor=west},
+  flujo/.style={-{Stealth[length=2.4mm]}, draw=extGris, line width=0.7pt},
+  clave/.style={draw, rounded corners=2pt, line width=0.6pt,
+                font=\sffamily\scriptsize, inner sep=3pt, text width=2.5cm, align=center},
+}
+% Título en negrita dentro de una caja del diagrama
+\newcommand{\pasotitulo}[1]{{\bfseries #1}}
+
+% Color de texto base
+\color{extNegro}
+
+% ===== Títulos (Lato vía \sffamily + verde) =====
+% "action titles": van en \section como oraciones completas
+\titleformat{\section}
+  {\sffamily\bfseries\large\color{extVerde}}{\thesection}{0.6em}{}
+\titleformat{\subsection}
+  {\sffamily\bfseries\normalsize\color{extNegro}}{\thesubsection}{0.6em}{}
+\titleformat{\subsubsection}
+  {\sffamily\bfseries\small\color{extGris}}{}{0em}{}
+\titlespacing*{\section}{0pt}{14pt}{5pt}
+\titlespacing*{\subsection}{0pt}{10pt}{3pt}
+
+% ===== Pie de página con numeración =====
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\renewcommand{\footrule}{\hbox to\headwidth{\color{extGris!40}\leaders\hrule height \footrulewidth\hfill}}
+\fancyfoot[L]{\sffamily\footnotesize\color{extGris}%
+  Universidad Externado de Colombia · Informe de Deep Learning}
+\fancyfoot[R]{\sffamily\footnotesize\color{extGris}%
+  Pág. \thepage\ de \pageref{LastPage}}
+
+
+
+% (tocloft se carga arriba, antes de parskip)
+\renewcommand{\cftsecfont}{\sffamily\bfseries\color{extNegro}}
+\renewcommand{\cftsecpagefont}{\sffamily\color{extGris}}
+\renewcommand{\cftsubsecfont}{\sffamily\color{extGris}}
+\renewcommand{\cftsubsecpagefont}{\sffamily\color{extGris}}
+\renewcommand{\cfttoctitlefont}{\sffamily\bfseries\LARGE\color{extVerde}}
+\setlength{\cftbeforesecskip}{6pt}
+% Etiquetas anchas tipo "Anexo A" / "Anexo C.1": la caja del número por defecto
+% (~2.3em) es muy angosta y la etiqueta se sale y se solapa con el título. Se ensancha:
+\setlength{\cftsecnumwidth}{4.7em}      % número de sección: cabe "Anexo A"
+\setlength{\cftsubsecindent}{4.7em}     % subsección alineada bajo el título de sección
+\setlength{\cftsubsecnumwidth}{5.6em}   % número de subsección: cabe "Anexo C.1"
+
+% ===== Pies de figura/tabla =====
+\captionsetup{font=small, labelfont={sf,bf,color=extVerde}, textfont={sf}}
+% babel-spanish rotula las tablas como "Cuadro"; se prefiere "Tabla",
+% que además es como se las nombra habitualmente en el cuerpo del texto.
+\addto\captionsspanish{\renewcommand{\tablename}{Tabla}}
+
+% ===== Caja "pensamiento gobernante" / callouts =====
+\newtcolorbox{govbox}{
+  enhanced, breakable, boxrule=0pt, leftrule=3pt,
+  colback=extVerde!6, colframe=extVerde,
+  arc=1pt, left=10pt, right=10pt, top=8pt, bottom=8pt,
+  fontupper=\normalsize
+}
+
+% ===== Metadatos del PDF =====
+\usepackage{hyperref}
+\hypersetup{
+  pdftitle={Informe de Deep Learning — Universidad Externado de Colombia},
+  pdfauthor={Yeiver Estevan Sanabria Sánchez},
+  colorlinks=true, linkcolor=extVerde, urlcolor=extVerde, citecolor=extVerde
+}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdflang={es},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\author{}
+\date{\vspace{-2.5em}}
+
+\begin{document}
+
+\begin{titlepage}
+\thispagestyle{empty}
+
+% --- Banda superior verde (sangrado completo) ---
+\begin{tikzpicture}[remember picture, overlay]
+  \fill[extVerde] (current page.north west) rectangle
+       ($(current page.north east)+(0,-6.2cm)$);
+  \fill[extGris] ($(current page.north west)+(0,-6.2cm)$) rectangle
+       ($(current page.north east)+(0,-6.35cm)$);
+  \node[anchor=north west, align=left, inner sep=0pt]
+    at ($(current page.north west)+(2.6cm,-2.2cm)$)
+    {\sffamily\bfseries\color{white}\LARGE UNIVERSIDAD EXTERNADO DE COLOMBIA\\[0.35cm]
+     \sffamily\color{white}\Large Departamento de Matematicas --- Pregrado en Ciencia de Datos};
+\end{tikzpicture}
+
+\vspace*{7.5cm}
+
+% --- Bloque de título ---
+\begin{flushleft}
+{\sffamily\bfseries\color{extGris}\large INFORME TÉCNICO\par}
+\vspace{0.35cm}
+{\color{extVerde}\rule{3.2cm}{2pt}\par}
+\vspace{0.9cm}
+
+{\sffamily\bfseries\color{extNegro}\LARGE
+Tamaño de la capa latente en autoencoders para la detección de intrusos en red\par}
+
+\vspace{0.8cm}
+{\itshape\large\color{extGris}
+Replicación del estudio de Song et al. (2021) y aproximación mediante tecnicas alternativas.\par}
+\end{flushleft}
+
+\vfill
+
+% --- Metadatos ---
+\begin{flushleft}
+{\sffamily\normalsize\color{extNegro}%
+\setlength{\tabcolsep}{0pt}%
+\renewcommand{\arraystretch}{1.5}%
+\begin{tabular}{@{}ll@{}}
+\makebox[5cm][l]{\color{extVerde}\bfseries Autor}    & Yeiver Estevan Sanabria Sánchez\\
+\makebox[4.2cm][l]{\color{extVerde}\bfseries Programa} & Pregrado en Ciencia de Datos\\
+\makebox[4.2cm][l]{\color{extVerde}\bfseries Profesor} & Wilmer Pineda Ríos\\
+\end{tabular}\par}
+\end{flushleft}
+
+\vspace{1.2cm}
+
+% --- Banda inferior verde (sangrado completo) ---
+\begin{tikzpicture}[remember picture, overlay]
+  \fill[extVerde] (current page.south west) rectangle
+       ($(current page.south east)+(0,1.6cm)$);
+  \node[anchor=west, inner sep=0pt]
+    at ($(current page.south west)+(2.6cm,0.8cm)$)
+    {\sffamily\footnotesize\color{white} Octubre de 2026};
+  \node[anchor=east, inner sep=0pt]
+    at ($(current page.south east)+(-2.6cm,0.8cm)$)
+    {\sffamily\footnotesize\color{white} Versión 1.0 \quad·\quad Borrador};
+\end{tikzpicture}
+
+\end{titlepage}
+
+\newtcolorbox{pendiente}{
+  enhanced, boxrule=0.6pt, colback=extDorado!8, colframe=extDorado,
+  arc=1pt, left=8pt, right=8pt, top=5pt, bottom=5pt,
+  fontupper=\sffamily\small\color{extGris}, title={Conclusiones},
+  fonttitle=\sffamily\bfseries\small, coltitle=extNegro, colbacktitle=extDorado!35
+}
+
+\section{Contexto y alcance de la entrega}\label{sec:contexto}
+
+El proyecto replica el estudio de Song et~al. (\citeproc{ref-songAutoencoders2021}{2021}), que analiza cómo dos decisiones de diseño de
+un \emph{autoencoder} ---la estructura (profundidad y ancho de las capas ocultas) y el tamaño de la capa
+latente--- afectan su desempeño como detector de intrusiones en red basado en anomalías. El
+\emph{autoencoder} se entrena solo con tráfico normal y marca como ataque todo registro cuyo error de
+reconstrucción supera un umbral. Los autores evalúan tres estructuras sobre NSL-KDD, IoTID20 y
+N-BaIoT, recorren todos los tamaños de latente posibles y reportan como mejor resultado en NSL-KDD un
+MCC de 0.712 con la estructura (5,64) y latente 3.
+
+Como se documentó en la primera entrega, no existe un conjunto público colombiano de tráfico de red
+etiquetado (\citeproc{ref-brionesLascano2026}{Briones-Lascano et~al., 2026}; \citeproc{ref-pavonUnda2022}{Pavón Unda et~al., 2022}), por lo que el trabajo se apoya en los conjuntos del
+artículo. Esta entrega se concentra en la \textbf{replicación sobre NSL-KDD}: el \emph{pipeline} completo del
+artículo, una versión reducida de su diseño experimental y la línea base supervisada contra la cual se
+medirá el \emph{autoencoder}. Adicionalmente se plantea en lugar del traslado al problema local, un contraste respecto a una alternativa lineal basada en PCA, para aislar la contribución de los componentes no lineales incluidos en el autoencoder, para complementar el trabajo de los autores.
+
+\section{Metodología de la replicación}\label{sec:metodologia}
+
+La Figura \ref{fig:pipeline} resume el \emph{pipeline}. Cada paso sigue la sección 4.1 del artículo; las
+decisiones propias se señalan en el texto y se consolidan en la Tabla \ref{tab:diferencias}.
+
+\begin{figure}[!htb]
+\centering
+\begin{tikzpicture}[node distance=4mm and 6mm]
+  \tikzset{p/.style={paso, text width=4.4cm, minimum height=1.55cm, inner sep=3pt, font=\sffamily\scriptsize}}
+  \node[neutro, p] (d) {\pasotitulo{1. Datos y partición}\\ KDDTrain+ $\rightarrow$ train (80\,\%) / validación (20\,\%); KDDTest+ $\rightarrow$ test};
+  \node[principal, p, right=of d] (pp) {\pasotitulo{2. Preprocesamiento}\\ Solo normales del train; one-hot + recorte IQR + min-max ajustados con ellos (sin fuga)};
+  \node[principal, p, right=of pp] (t) {\pasotitulo{3. Entrenamiento}\\ Autoencoder (profundidad, ancho, latente); 100 épocas, Adam; solo tráfico normal};
+  \node[secundario, p, below=of t] (s) {\pasotitulo{4. Selección de época}\\ AUC de validación (normales y ataques) en cada época; mejores pesos};
+  \node[secundario, p, left=of s] (u) {\pasotitulo{5. Umbral}\\ z-score con media y desv. est. de normales de validación; barrido $[-4, 4]$, máximo MCC};
+  \node[final, p, left=of u] (e) {\pasotitulo{6. Evaluación en test}\\ Mismo z-score y umbral, sin recalcular; accuracy, TPR, FPR, F1, MCC, AUC};
+  \foreach \a/\b in {d/pp, pp/t, t/s, s/u, u/e} \draw[flujo] (\a) -- (\b);
+\end{tikzpicture}
+\caption{Pipeline de replicación. Gris: datos; verde: preparación y entrenamiento; azul: selección con el conjunto de validación; verde oscuro: evaluación final.}
+\label{fig:pipeline}
+\end{figure}
+
+\subsection{Datos y particiones}\label{sec:datos}
+
+Se usa \texttt{KDDTrain+} para entrenamiento y validación, y \texttt{KDDTest+} como conjunto de prueba, igual que
+el artículo. \texttt{KDDTrain+} se divide 80/20 de forma estratificada por tipo de ataque, con semilla fija:
+el train queda con 100 778 registros (53 874 normales, los únicos que ve el \emph{autoencoder}) y la
+validación con 25 195 (46.5 \% de ataques). El test tiene 22 544 registros (56.9 \% de ataques) e
+incluye 17 tipos de ataque que no aparecen en \texttt{KDDTrain+} (3750 registros), lo que lo convierte en una
+prueba de generalización ante ataques nuevos y no solo ante datos nuevos. La validación, en cambio,
+conserva normales y ataques porque el artículo la usa para seleccionar la época y el umbral; este es
+un supuesto relevante del método, pues exige algunos ataques etiquetados aunque el entrenamiento sea
+no supervisado.
+
+\subsection{Preprocesamiento}\label{sec:preprocesamiento}
+
+Las variables categóricas (\texttt{protocol\_type}, \texttt{service}, \texttt{flag}) se codifican con \emph{one-hot}. Las
+numéricas se llevan a \([0, 1]\) con min-max, requisito impuesto por la salida sigmoide del modelo, que
+no puede producir valores fuera de ese rango. Las variables \texttt{*\_rate} ya están en \([0, 1]\) y se usan sin
+transformar. Para \texttt{duration}, los bytes y las variables \texttt{*count}, el artículo indica eliminar los
+\emph{outliers} antes del min-max sin precisar el método; aquí se usa la regla IQR
+(\([Q_1 - 1.5\,\mathrm{IQR},\, Q_3 + 1.5\,\mathrm{IQR}]\)), pero \textbf{recortando} los valores al límite en
+lugar de eliminar filas, porque eliminarlas descartaría el 46 \% de los normales del train: tráfico
+legítimo, como transferencias grandes, que el modelo dejaría de conocer y luego marcaría como ataque.
+
+\subsection{Modelo, entrenamiento y selección}\label{sec:modelo}
+
+El \emph{autoencoder} es denso y simétrico, y cada capa del codificador tiene la mitad de neuronas que la
+anterior (Tabla \ref{tab:estructuras}). Todas las capas ocultas, incluida la latente, usan ReLU, y la
+salida usa sigmoide. El artículo no especifica la activación de la capa latente; se asume la misma
+del resto de capas ocultas. Se entrena con Adam (tasa de aprendizaje \(10^{-4}\), \emph{weight decay}
+\(10^{-5}\)), pérdida L2, 100 épocas y lotes de 512, sin otra regularización.
+
+\begin{table}[!h]
+\centering
+\caption{\label{tab:estructuras}Estructuras evaluadas (profundidad, ancho), con entrada de 77 dimensiones.}
+\centering
+\fontsize{9}{11}\selectfont
+\begin{tabular}[t]{lllr}
+\toprule
+Estructura & Capas & Latentes evaluadas & Parámetros\\
+\midrule
+(5,32) & entrada–32–16–z–16–32–salida & 4 & 6 257\\
+(5,64) & entrada–64–32–z–32–64–salida & 1, 2, 3, 4, 6, 8, 12, 16, 24, 31 & 14 416 (z = 3)\\
+(7,64) & entrada–64–32–16–z–16–32–64–salida & 9 & 15 574\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+No se usa \emph{early stopping}: al final de cada época se calcula el AUC de validación tomando como
+puntuación de anomalía la distancia L2 entre cada registro y su reconstrucción, y al terminar se
+restauran los pesos de la época con mayor AUC. Para el umbral, la distancia de validación se
+estandariza con la media y la desviación estándar de los \textbf{normales} de validación, y se barre el
+umbral entre −4 y 4 en pasos de 0.01. Se elige el que maximiza el MCC: el artículo solo dice que
+``mejor separa las clases'', y el MCC es su métrica principal. En test se aplican la misma
+estandarización y el mismo umbral.
+
+\subsection{Diseño experimental reducido}\label{sec:diseno}
+
+Replicar el barrido completo del artículo (61 configuraciones × 20 semillas) no es viable con los
+recursos disponibles, por lo que se reduce en dos fases. En la primera se comparan las tres
+estructuras, cada una con el tamaño de latente que dio el mejor MCC en el artículo, lo que permite
+contrastar fila a fila con su Tabla 5. En la segunda se barre el tamaño de latente solo en (5,64), la
+mejor estructura del artículo, con una muestra de diez valores entre 1 y 31. En total son 12
+configuraciones × 10 semillas = 120 corridas.
+
+La Tabla \ref{tab:diferencias} consolida las diferencias frente al artículo.
+
+\begin{table}[!h]
+\centering
+\caption{\label{tab:diferencias}Diferencias experimentales frente a Song et al. (2021).}
+\centering
+\fontsize{8}{10}\selectfont
+\begin{tabular}[t]{>{\raggedright\arraybackslash}p{2.3cm}>{\raggedright\arraybackslash}p{3.6cm}>{\raggedright\arraybackslash}p{3.6cm}>{\raggedright\arraybackslash}p{4.6cm}}
+\toprule
+Aspecto & Song et al. (2021) & Esta replicación & Motivo\\
+\midrule
+Validación & 10 \% de KDDTrain+ & 20 \% estratificado & El tamaño del conjunto lo permite; sin cambios relevantes en la línea base\\
+Outliers & Se eliminan (método no indicado) & Recorte IQR (sin eliminar filas) & Eliminar filas descartaba el 46 \% de los normales\\
+Activación latente & No especificada & ReLU & Igual al resto de capas ocultas\\
+Criterio del umbral & "Mejor separa" (no precisado) & Máximo MCC en validación & Es la métrica principal del artículo\\
+Latentes & Todos (61 configuraciones) & Mejor z por estructura + 10 z en (5,64) & Costo computacional\\
+\addlinespace
+Repeticiones & 20 semillas & 10 semillas & Costo computacional\\
+Datasets & NSL-KDD, IoTID20, N-BaIoT & Solo NSL-KDD & Alcance de la entrega\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Línea base: XGBoost}\label{sec:linea-base}
+
+Como modelo de referencia se usa XGBoost, descrito en la literatura como \emph{baseline} habitual en
+detección de intrusiones (\citeproc{ref-rashid2024}{Rashid et~al., 2024}) y que con frecuencia supera a modelos profundos en estos
+conjuntos (\citeproc{ref-alharthi2025}{Alharthi et~al., 2025}). A diferencia del \emph{autoencoder}, es \textbf{supervisado}: se entrena con normales
+y ataques del train (\emph{one-hot} y estandarización, 121 variables), 1000 árboles como tope, tasa de
+aprendizaje 0.05, profundidad 6 y \emph{early stopping} de 10 rondas. La curva de pérdida no muestra sobreajuste dañin. Se clasifica como ataque con
+probabilidad \(\geq 0.5\).
+
+La métrica principal es el \textbf{MCC}, como en el artículo: con 56.9 \% de ataques en test, la \emph{accuracy}
+premia al modelo que se inclina hacia la clase mayoritaria, mientras que el MCC solo es alto si se
+aciertan ambas clases. Se reportan además TPR (tasa de detección) y FPR (falsas alarmas), porque en un
+IDS los dos errores tienen costos distintos: un ataque no detectado frente a la fatiga de los
+analistas por falsas alarmas.
+
+\begin{table}[!h]
+\centering
+\caption{\label{tab:xgb-tabla}Desempeño de la línea base XGBoost en NSL-KDD (umbral 0.5).}
+\centering
+\fontsize{9}{11}\selectfont
+\begin{tabular}[t]{lrrrrrr}
+\toprule
+Conjunto & Accuracy & TPR & FPR & F1 & MCC & AUC\\
+\midrule
+Validación & 0.999 & 0.999 & 0.001 & 0.999 & 0.998 & 1.000\\
+\textbf{Test} & \textbf{0.791} & \textbf{0.654} & \textbf{0.029} & \textbf{0.781} & \textbf{0.636} & \textbf{0.967}\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+En validación, XGBoost es casi perfecto (MCC 0.998), pero en test el MCC cae a 0.636 y la TPR a 0.654
+(Tabla \ref{tab:xgb-tabla}). La validación proviene de la misma
+distribución que el train; el test no. La caída no es sobreajuste en sentido estricto, sino \textbf{cambio
+de distribución}: el modelo detecta el 77.5 \% de los tipos de ataque que vio al entrenar, pero solo
+el 36.2 \% de los que aparecen únicamente en test.
+El MCC de 0.636 en test es la referencia
+que el \emph{autoencoder} debe superar; el artículo reporta 0.712, lo que anticipa la hipótesis central: un
+detector de anomalías, que no depende de haber visto cada tipo de ataque, debería generalizar mejor
+ante ataques nuevos.
+
+\section{Alternativa lineal: PCA}\label{sec:pca}
+
+Para aislar el aporte de las no linealidades del \emph{autoencoder} se agrega una alternativa que no está
+en el artículo: el análisis de componentes principales (PCA) como detector de anomalías. Un
+\emph{autoencoder} lineal entrenado con error cuadrático aprende el mismo subespacio que el PCA
+(\citeproc{ref-baldiHornik1989}{Baldi \& Hornik, 1989}), de modo que este equivale al \emph{autoencoder} sin activaciones ReLU ni capas
+intermedias. El PCA se ajusta solo con los normales del train, con el mismo preprocesamiento (77
+variables); la puntuación de anomalía es la distancia L2 entre cada registro y su reconstrucción desde
+las primeras \(k\) componentes, y el umbral se elige con el mismo procedimiento por MCC en validación.
+Se evalúan los mismos valores de \(k\) que los tamaños de latente del barrido en (5,64), más los que
+explican el 80, 90, 95 y 99 \% de la varianza de los normales (\(k\) = 7, 13, 19 y 35). Como en el
+\emph{autoencoder}, \(k\) se selecciona por el AUC de validación, sin consultar el test: el elegido es
+\(k\) = 4, que explica el 67.5 \% de la varianza. Al
+ser determinista, no requiere repetir con varias semillas.
+
+\section{Resultados del autoencoder}\label{sec:resultados-ae}
+
+\subsection{Comparación entre estructuras}\label{sec:estructuras}
+
+\begin{table}[!h]
+\centering
+\caption{\label{tab:ae-estructuras}Mejor latente por estructura: réplica (media ± desviación estándar, 10 semillas) frente a la Tabla 5 de Song et al. (2021, 20 corridas).}
+\centering
+\resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{
+\fontsize{8}{10}\selectfont
+\begin{tabular}[t]{llrrrrrrrr}
+\toprule
+Fuente & Estructura & z & Umbral & Accuracy & TPR & FPR & MCC & F1 & AUC\\
+\midrule
+Réplica & (5,32) & 4 & 2.482 ± 0.173 & 0.822 ± 0.019 & 0.716 ± 0.030 & 0.038 ± 0.015 & 0.679 ± 0.032 & 0.820 ± 0.021 & 0.956 ± 0.005\\
+Song et al. & (5,32) & 4 & 2.846 & 0.840 & 0.757 & 0.051 & 0.705 & 0.842 & 0.960\\
+\addlinespace
+Réplica & (5,64) & 3 & 2.564 ± 0.185 & 0.818 ± 0.017 & 0.709 ± 0.030 & 0.039 ± 0.022 & 0.673 ± 0.030 & 0.816 ± 0.020 & 0.954 ± 0.010\\
+Song et al. & (5,64) & 3 & 2.488 & 0.848 & 0.782 & 0.065 & 0.712 & 0.853 & 0.960\\
+\addlinespace
+Réplica & (7,64) & 9 & 2.751 ± 0.358 & 0.813 ± 0.012 & 0.705 ± 0.023 & 0.043 ± 0.025 & 0.665 ± 0.023 & 0.811 ± 0.013 & 0.956 ± 0.006\\
+Song et al. & (7,64) & 9 & 2.840 & 0.847 & 0.777 & 0.061 & 0.711 & 0.852 & 0.959\\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+Se observan diferencias en las metricas reportadas por los autores. Dichas diferencias se observan en todas las configuraciones reproducidas. La brecha observada posiblemente sea explicada por las inconsistencias metodologicas del articulo, por ejemplo el metodo de eliminacion de outliers, y la funcion de activacion de la capa latente, las cuales no estan explicitas en la metodologia del documento. Apesar de este gap en el desempeño observado, se evidencia una mejora significativa respecto a la linea base, y se concluye que la diferencia no es resultado de un error metodologico, si no de diferencias razonables resultantes de factores no reportados.
+
+\subsection{Comparación de modelos}\label{sec:comparacion}
+
+\begin{figure}[!htb]
+\includegraphics{informe_files/figure-latex/mcc-modelos-1} \caption{MCC en test según el número de componentes $k$ (PCA) o el tamaño de la capa latente $z$ (\textit{autoencoder} (5,64), media y desviación estándar sobre 10 semillas). El círculo marca el $k$ seleccionado por AUC de validación.}\label{fig:mcc-modelos}
+\end{figure}
+
+Con la selección por validación, el PCA (\(k\) = 4) obtiene en test un MCC de
+0.649, por debajo del \emph{autoencoder} seleccionado y por encima de XGBoost (Figura
+\ref{fig:mcc-modelos}). Su AUC en test, en cambio, es prácticamente igual al del \emph{autoencoder}
+(0.961 frente a 0.957):
+ambos ordenan los registros por anomalía de forma similar, y la ventaja del modelo no lineal aparece
+en el punto de corte, sobre todo en U2R y en los ataques nuevos (tasas de detección de
+0.265 y 0.528 para el PCA). Con \(k\) entre 7 y 13 el PCA
+supera 0.78 de MCC en test, pero la validación no elige esos valores y la curva es inestable entre
+\(k\) vecinos: el desempeño en test depende tanto del umbral como del modelo.
+
+\begin{figure}[!htb]
+\includegraphics{informe_files/figure-latex/ae-vs-xgb-1} \caption{Tasa de detección en test por categoría de ataque y en ataques que solo aparecen en test: XGBoost frente al autoencoder seleccionado (media de 10 semillas). En \textit{Normal} la tasa es la FPR.}\label{fig:ae-vs-xgb}
+\end{figure}
+
+\begin{pendiente}
+Los resultados de la ejecucion independiente coinciden con  los hallazgos reportados en el trabajo guia. Se puede concluir en base al experimento que el tamaño del espacio latente solo genera mejoras marginales en el desempeño para la deteccion de nuevos ataques.
+
+Respecto al desempeño del autoencoder frente al modelo de base si se puede observar una  mejora significativa en la deteccion de nuevos tipos de ataque. El desempeño no es homogeneo entre tipos de ataque, y hay clases en las que aun queda mucho margen de mejora. Sin embargo de manera preliminar se puede justificar la implementacion del autoencoder, pues su mecanismo de aprendizaje le permite generalizar mejor ante protocolos no vistos durante el entrenamiento. 
+
+Por otra parte PCA genera un desempeño sorprendentemente alto. Si bien el autoencoer obitene el mejor MCC, la diferencia general es pequeña, por lo que se concluye que el componente no lineal aportado por el autoencoder puede no ser tan significativo. Sin embargo, el autoencoder justifica su implementacion al detectar los ataques dificiles:  detecta el 49 % de U2R contra el 27 % del PCA, y el 63 % de los ataques nuevos contra el 53 %.
+          
+\end{pendiente}
+
+\textbf{Reproducibilidad.} El código completo está en \texttt{script.ipynb} (semilla 42; corridas del
+\emph{autoencoder} con semillas 42 a 51), y los resultados se guardan en la carpeta \texttt{resultados/}. Se usaron
+herramientas de inteligencia artificial generativa (claude Opus 5.5 y Sonnet 5.5) como apoyo en la implementación y la redacción;
+todas las decisiones técnicas fueron revisadas y pueden sustentarse.
+
+\section*{Referencias}\label{referencias}
+\addcontentsline{toc}{section}{Referencias}
+
+\protect\phantomsection\label{refs}
+\begin{CSLReferences}{1}{0}
+\bibitem[\citeproctext]{ref-alharthi2025}
+Alharthi, A., Alaryani, M., \& Kaddoura, S. (2025). A Comparative Study of Machine Learning and Deep Learning Models in Binary and Multiclass Classification for Intrusion Detection Systems. \emph{Array}, \emph{26}, 100406. \url{https://doi.org/10.1016/j.array.2025.100406}
+
+\bibitem[\citeproctext]{ref-baldiHornik1989}
+Baldi, P., \& Hornik, K. (1989). Neural Networks and Principal Component Analysis: Learning from Examples Without Local Minima. \emph{Neural Networks}, \emph{2}(1), 53-58. \url{https://doi.org/10.1016/0893-6080(89)90014-2}
+
+\bibitem[\citeproctext]{ref-brionesLascano2026}
+Briones-Lascano, T., Vergara-Lozano, V., \& Miranda-Andrade, A. (2026). Strategic Cyber Intelligence with Advanced Analytics in Latin America: A Perspective. \emph{Frontiers in Big Data}, \emph{9}, 1733733. \url{https://doi.org/10.3389/fdata.2026.1733733}
+
+\bibitem[\citeproctext]{ref-pavonUnda2022}
+Pavón Unda, E., Guaytarilla, L. F., Cueva, C., \& Durango, K. (2022). Perspectivas sobre la ciberseguridad y ciberdefensa en América Latina. \emph{Athenea Journal}, \emph{3}(9), 26-37. \url{https://doi.org/10.47460/athenea.v3i9.43}
+
+\bibitem[\citeproctext]{ref-rashid2024}
+Rashid, R., Khyzer, H., \& Xun, Y. (2024). Stacked HRDGL: A Fast Hybrid Model for Real-Time Network Intrusion Detection. \emph{2024 IEEE International Conference on Communications in China (ICCC)}, 1965-1969. \url{https://doi.org/10.1109/ICCC62609.2024.10941815}
+
+\bibitem[\citeproctext]{ref-songAutoencoders2021}
+Song, Y., Hyun, S., \& Cheong, Y.-G. (2021). Analysis of Autoencoders for Network Intrusion Detection. \emph{Sensors}, \emph{21}(13), 4294. \url{https://doi.org/10.3390/s21134294}
+
+\end{CSLReferences}
+
+\end{document}

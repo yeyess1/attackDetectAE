@@ -1,0 +1,7 @@
+# Solo se versionan el notebook, el informe, resultados y figuras
+data/
+nslkdd/
+proyecto.zip
+.idea/
+informe_files/
+*.pdf

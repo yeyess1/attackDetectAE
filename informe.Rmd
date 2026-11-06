@@ -1,0 +1,452 @@
+---
+# title/author intencionalmente omitidos: la portada se arma a mano (abajo)
+output:
+  bookdown::pdf_document2:   # pdf_document2 (no pdf_document): habilita \@ref()
+    latex_engine: xelatex
+    toc: false            # el TOC se coloca manualmente tras la portada
+    number_sections: true
+    keep_tex: true
+    fig_caption: true
+    includes:
+      in_header: preamble.tex
+bibliography: referencias.bib
+csl: apa.csl
+link-citations: true
+lang: es
+mainfont: "Source Serif Pro"     # cuerpo (serif legible)
+sansfont: "Lato"                 # títulos y elementos destacados — tipografía real del sitio institucional
+# El sistema trae dos familias "Lato": los TTF completos de /truetype/lato/ y una
+# copia parcial en gfonts que solo aporta regular/bold/itálica-light en .woff2
+# (xelatex no puede incrustar WOFF). Fijamos los TTF completos explícitamente:
+sansfontoptions:
+  - Extension=.ttf
+  - UprightFont=Lato-Regular
+  - BoldFont=Lato-Bold
+  - ItalicFont=Lato-Italic
+  - BoldItalicFont=Lato-BoldItalic
+monofont: "DejaVu Sans Mono"
+fontsize: 11pt
+geometry: "a4paper, top=2.2cm, bottom=2.2cm, left=2.6cm, right=2.6cm"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+```
+
+<!-- ============================================================= -->
+<!-- PORTADA    -->
+<!-- ============================================================= -->
+
+\begin{titlepage}
+\thispagestyle{empty}
+
+% --- Banda superior verde (sangrado completo) ---
+\begin{tikzpicture}[remember picture, overlay]
+  \fill[extVerde] (current page.north west) rectangle
+       ($(current page.north east)+(0,-6.2cm)$);
+  \fill[extGris] ($(current page.north west)+(0,-6.2cm)$) rectangle
+       ($(current page.north east)+(0,-6.35cm)$);
+  \node[anchor=north west, align=left, inner sep=0pt]
+    at ($(current page.north west)+(2.6cm,-2.2cm)$)
+    {\sffamily\bfseries\color{white}\LARGE UNIVERSIDAD EXTERNADO DE COLOMBIA\\[0.35cm]
+     \sffamily\color{white}\Large Departamento de Matematicas --- Pregrado en Ciencia de Datos};
+\end{tikzpicture}
+
+\vspace*{7.5cm}
+
+% --- Bloque de título ---
+\begin{flushleft}
+{\sffamily\bfseries\color{extGris}\large INFORME TÉCNICO\par}
+\vspace{0.35cm}
+{\color{extVerde}\rule{3.2cm}{2pt}\par}
+\vspace{0.9cm}
+
+{\sffamily\bfseries\color{extNegro}\LARGE
+Tamaño de la capa latente en autoencoders para la detección de intrusos en red\par}
+
+\vspace{0.8cm}
+{\itshape\large\color{extGris}
+Replicación del estudio de Song et al. (2021) y aproximación mediante tecnicas alternativas.\par}
+\end{flushleft}
+
+\vfill
+
+% --- Metadatos ---
+\begin{flushleft}
+{\sffamily\normalsize\color{extNegro}%
+\setlength{\tabcolsep}{0pt}%
+\renewcommand{\arraystretch}{1.5}%
+\begin{tabular}{@{}ll@{}}
+\makebox[5cm][l]{\color{extVerde}\bfseries Autor}    & Yeiver Estevan Sanabria Sánchez\\
+\makebox[4.2cm][l]{\color{extVerde}\bfseries Programa} & Pregrado en Ciencia de Datos\\
+\makebox[4.2cm][l]{\color{extVerde}\bfseries Profesor} & Wilmer Pineda Ríos\\
+\end{tabular}\par}
+\end{flushleft}
+
+\vspace{1.2cm}
+
+% --- Banda inferior verde (sangrado completo) ---
+\begin{tikzpicture}[remember picture, overlay]
+  \fill[extVerde] (current page.south west) rectangle
+       ($(current page.south east)+(0,1.6cm)$);
+  \node[anchor=west, inner sep=0pt]
+    at ($(current page.south west)+(2.6cm,0.8cm)$)
+    {\sffamily\footnotesize\color{white} Octubre de 2026};
+  \node[anchor=east, inner sep=0pt]
+    at ($(current page.south east)+(-2.6cm,0.8cm)$)
+    {\sffamily\footnotesize\color{white} Versión 1.0 \quad·\quad Borrador};
+\end{tikzpicture}
+
+\end{titlepage}
+
+<!-- ===================== CUERPO ===================== -->
+
+```{r datos, include=FALSE}
+library(ggplot2)
+library(knitr)
+library(kableExtra)
+
+knitr::opts_chunk$set(dev = "cairo_pdf", fig.pos = "!htb", out.extra = "")
+
+# Paleta (validada para fondo claro): conjuntos y modelos
+COL_VAL <- "#2a78d6"; COL_TEST <- "#eb6834"
+COL_XGB <- "#6250d6"; COL_AE <- "#1baf7a"
+TINTA <- "#1A1A1A"; TINTA_2 <- "#58595B"; REJILLA <- "#E6E6E3"
+
+tema <- theme_minimal(base_size = 9, base_family = "Lato") +
+  theme(panel.grid.minor = element_blank(),
+        panel.grid.major = element_line(color = REJILLA, linewidth = 0.3),
+        axis.text = element_text(color = TINTA_2),
+        axis.title = element_text(color = TINTA_2),
+        legend.position = "top", legend.title = element_blank(),
+        legend.text = element_text(color = TINTA),
+        plot.margin = margin(4, 8, 4, 4))
+
+leer <- function(f) read.csv(file.path("resultados", f), fileEncoding = "UTF-8", check.names = FALSE)
+xgb <- leer("baseline_xgboost_nslkdd.csv")
+xgb_cat <- leer("baseline_xgboost_nslkdd_categorias.csv")
+xgb_nov <- leer("baseline_xgboost_nslkdd_novedad.csv")
+xgb_test <- xgb[xgb$conjunto == "test", ]
+
+# Resultados del autoencoder: las secciones se completan solas cuando el experimento termina
+AE_CSV <- file.path("resultados", "ae_nslkdd_corridas.csv")
+N_CORRIDAS <- 120
+ae <- if (file.exists(AE_CSV)) leer("ae_nslkdd_corridas.csv") else NULL
+ae_listo <- !is.null(ae) && nrow(ae) >= N_CORRIDAS
+
+# Alternativa lineal: PCA (k seleccionado por AUC de validación, como el autoencoder)
+pca <- leer("pca_nslkdd.csv")
+pca_sel <- pca[which.max(pca$auc_val), ]
+
+# Recuadro visible hasta que se escriba la lectura de cada resultado
+pendiente <- function(texto) {
+  cat("\\begin{pendiente}", texto, "\\end{pendiente}\n", sep = "\n")
+}
+f3 <- function(x) formatC(x, format = "f", digits = 3)
+```
+
+```{=latex}
+\newtcolorbox{pendiente}{
+  enhanced, boxrule=0.6pt, colback=extDorado!8, colframe=extDorado,
+  arc=1pt, left=8pt, right=8pt, top=5pt, bottom=5pt,
+  fontupper=\sffamily\small\color{extGris}, title={Conclusiones},
+  fonttitle=\sffamily\bfseries\small, coltitle=extNegro, colbacktitle=extDorado!35
+}
+```
+
+# Contexto y alcance de la entrega {#sec:contexto}
+
+El proyecto replica el estudio de @songAutoencoders2021, que analiza cómo dos decisiones de diseño de
+un *autoencoder* —la estructura (profundidad y ancho de las capas ocultas) y el tamaño de la capa
+latente— afectan su desempeño como detector de intrusiones en red basado en anomalías. El
+*autoencoder* se entrena solo con tráfico normal y marca como ataque todo registro cuyo error de
+reconstrucción supera un umbral. Los autores evalúan tres estructuras sobre NSL-KDD, IoTID20 y
+N-BaIoT, recorren todos los tamaños de latente posibles y reportan como mejor resultado en NSL-KDD un
+MCC de 0.712 con la estructura (5,64) y latente 3.
+
+Como se documentó en la primera entrega, no existe un conjunto público colombiano de tráfico de red
+etiquetado [@brionesLascano2026; @pavonUnda2022], por lo que el trabajo se apoya en los conjuntos del
+artículo. Esta entrega se concentra en la **replicación sobre NSL-KDD**: el *pipeline* completo del
+artículo, una versión reducida de su diseño experimental y la línea base supervisada contra la cual se
+medirá el *autoencoder*. Adicionalmente se plantea en lugar del traslado al problema local, un contraste respecto a una alternativa lineal basada en PCA, para aislar la contribución de los componentes no lineales incluidos en el autoencoder, para complementar el trabajo de los autores.
+
+# Metodología de la replicación {#sec:metodologia}
+
+La Figura \@ref(fig:pipeline) resume el *pipeline*. Cada paso sigue la sección 4.1 del artículo; las
+decisiones propias se señalan en el texto y se consolidan en la Tabla \@ref(tab:diferencias).
+
+```{=latex}
+\begin{figure}[!htb]
+\centering
+\begin{tikzpicture}[node distance=4mm and 6mm]
+  \tikzset{p/.style={paso, text width=4.4cm, minimum height=1.55cm, inner sep=3pt, font=\sffamily\scriptsize}}
+  \node[neutro, p] (d) {\pasotitulo{1. Datos y partición}\\ KDDTrain+ $\rightarrow$ train (80\,\%) / validación (20\,\%); KDDTest+ $\rightarrow$ test};
+  \node[principal, p, right=of d] (pp) {\pasotitulo{2. Preprocesamiento}\\ Solo normales del train; one-hot + recorte IQR + min-max ajustados con ellos (sin fuga)};
+  \node[principal, p, right=of pp] (t) {\pasotitulo{3. Entrenamiento}\\ Autoencoder (profundidad, ancho, latente); 100 épocas, Adam; solo tráfico normal};
+  \node[secundario, p, below=of t] (s) {\pasotitulo{4. Selección de época}\\ AUC de validación (normales y ataques) en cada época; mejores pesos};
+  \node[secundario, p, left=of s] (u) {\pasotitulo{5. Umbral}\\ z-score con media y desv. est. de normales de validación; barrido $[-4, 4]$, máximo MCC};
+  \node[final, p, left=of u] (e) {\pasotitulo{6. Evaluación en test}\\ Mismo z-score y umbral, sin recalcular; accuracy, TPR, FPR, F1, MCC, AUC};
+  \foreach \a/\b in {d/pp, pp/t, t/s, s/u, u/e} \draw[flujo] (\a) -- (\b);
+\end{tikzpicture}
+\caption{Pipeline de replicación. Gris: datos; verde: preparación y entrenamiento; azul: selección con el conjunto de validación; verde oscuro: evaluación final.}
+\label{fig:pipeline}
+\end{figure}
+```
+
+## Datos y particiones {#sec:datos}
+
+Se usa `KDDTrain+` para entrenamiento y validación, y `KDDTest+` como conjunto de prueba, igual que
+el artículo. `KDDTrain+` se divide 80/20 de forma estratificada por tipo de ataque, con semilla fija:
+el train queda con 100 778 registros (53 874 normales, los únicos que ve el *autoencoder*) y la
+validación con 25 195 (46.5 % de ataques). El test tiene 22 544 registros (56.9 % de ataques) e
+incluye 17 tipos de ataque que no aparecen en `KDDTrain+` (3750 registros), lo que lo convierte en una
+prueba de generalización ante ataques nuevos y no solo ante datos nuevos. La validación, en cambio,
+conserva normales y ataques porque el artículo la usa para seleccionar la época y el umbral; este es
+un supuesto relevante del método, pues exige algunos ataques etiquetados aunque el entrenamiento sea
+no supervisado.
+
+## Preprocesamiento {#sec:preprocesamiento}
+
+Las variables categóricas (`protocol_type`, `service`, `flag`) se codifican con *one-hot*. Las
+numéricas se llevan a $[0, 1]$ con min-max, requisito impuesto por la salida sigmoide del modelo, que
+no puede producir valores fuera de ese rango. Las variables `*_rate` ya están en $[0, 1]$ y se usan sin
+transformar. Para `duration`, los bytes y las variables `*count`, el artículo indica eliminar los
+*outliers* antes del min-max sin precisar el método; aquí se usa la regla IQR
+($[Q_1 - 1.5\,\mathrm{IQR},\, Q_3 + 1.5\,\mathrm{IQR}]$), pero **recortando** los valores al límite en
+lugar de eliminar filas, porque eliminarlas descartaría el 46 % de los normales del train: tráfico
+legítimo, como transferencias grandes, que el modelo dejaría de conocer y luego marcaría como ataque.
+
+## Modelo, entrenamiento y selección {#sec:modelo}
+
+El *autoencoder* es denso y simétrico, y cada capa del codificador tiene la mitad de neuronas que la
+anterior (Tabla \@ref(tab:estructuras)). Todas las capas ocultas, incluida la latente, usan ReLU, y la
+salida usa sigmoide. El artículo no especifica la activación de la capa latente; se asume la misma
+del resto de capas ocultas. Se entrena con Adam (tasa de aprendizaje $10^{-4}$, *weight decay*
+$10^{-5}$), pérdida L2, 100 épocas y lotes de 512, sin otra regularización.
+
+```{r estructuras}
+estructuras <- data.frame(
+  Estructura = c("(5,32)", "(5,64)", "(7,64)"),
+  Capas = c("entrada–32–16–z–16–32–salida", "entrada–64–32–z–32–64–salida",
+            "entrada–64–32–16–z–16–32–64–salida"),
+  Latente = c("4", "1, 2, 3, 4, 6, 8, 12, 16, 24, 31", "9"),
+  Parametros = c("6 257", "14 416 (z = 3)", "15 574")
+)
+kable(estructuras, booktabs = TRUE, align = "lllr",
+      col.names = c("Estructura", "Capas", "Latentes evaluadas", "Parámetros"),
+      caption = "Estructuras evaluadas (profundidad, ancho), con entrada de 77 dimensiones.") |>
+  kable_styling(latex_options = "hold_position", font_size = 9)
+```
+
+No se usa *early stopping*: al final de cada época se calcula el AUC de validación tomando como
+puntuación de anomalía la distancia L2 entre cada registro y su reconstrucción, y al terminar se
+restauran los pesos de la época con mayor AUC. Para el umbral, la distancia de validación se
+estandariza con la media y la desviación estándar de los **normales** de validación, y se barre el
+umbral entre −4 y 4 en pasos de 0.01. Se elige el que maximiza el MCC: el artículo solo dice que
+"mejor separa las clases", y el MCC es su métrica principal. En test se aplican la misma
+estandarización y el mismo umbral.
+
+## Diseño experimental reducido {#sec:diseno}
+
+Replicar el barrido completo del artículo (61 configuraciones × 20 semillas) no es viable con los
+recursos disponibles, por lo que se reduce en dos fases. En la primera se comparan las tres
+estructuras, cada una con el tamaño de latente que dio el mejor MCC en el artículo, lo que permite
+contrastar fila a fila con su Tabla 5. En la segunda se barre el tamaño de latente solo en (5,64), la
+mejor estructura del artículo, con una muestra de diez valores entre 1 y 31. En total son 12
+configuraciones × 10 semillas = 120 corridas.
+
+La Tabla \@ref(tab:diferencias) consolida las diferencias frente al artículo.
+
+```{r diferencias}
+diferencias <- data.frame(
+  Aspecto = c("Validación", "Outliers", "Activación latente", "Criterio del umbral",
+              "Latentes", "Repeticiones", "Datasets"),
+  Song = c("10 % de KDDTrain+", "Se eliminan (método no indicado)", "No especificada",
+           "\"Mejor separa\" (no precisado)", "Todos (61 configuraciones)", "20 semillas",
+           "NSL-KDD, IoTID20, N-BaIoT"),
+  Replica = c("20 % estratificado", "Recorte IQR (sin eliminar filas)", "ReLU",
+              "Máximo MCC en validación", "Mejor z por estructura + 10 z en (5,64)",
+              "10 semillas", "Solo NSL-KDD"),
+  Motivo = c("El tamaño del conjunto lo permite; sin cambios relevantes en la línea base",
+             "Eliminar filas descartaba el 46 % de los normales",
+             "Igual al resto de capas ocultas",
+             "Es la métrica principal del artículo",
+             "Costo computacional", "Costo computacional", "Alcance de la entrega")
+)
+kable(diferencias, booktabs = TRUE,
+      col.names = c("Aspecto", "Song et al. (2021)", "Esta replicación", "Motivo"),
+      caption = "Diferencias experimentales frente a Song et al. (2021).") |>
+  kable_styling(latex_options = "hold_position", font_size = 8) |>
+  column_spec(1, width = "2.3cm") |> column_spec(2, width = "3.6cm") |>
+  column_spec(3, width = "3.6cm") |> column_spec(4, width = "4.6cm")
+```
+
+
+# Línea base: XGBoost {#sec:linea-base}
+
+Como modelo de referencia se usa XGBoost, descrito en la literatura como *baseline* habitual en
+detección de intrusiones [@rashid2024] y que con frecuencia supera a modelos profundos en estos
+conjuntos [@alharthi2025]. A diferencia del *autoencoder*, es **supervisado**: se entrena con normales
+y ataques del train (*one-hot* y estandarización, 121 variables), 1000 árboles como tope, tasa de
+aprendizaje 0.05, profundidad 6 y *early stopping* de 10 rondas. La curva de pérdida no muestra sobreajuste dañin. Se clasifica como ataque con
+probabilidad $\geq 0.5$.
+
+La métrica principal es el **MCC**, como en el artículo: con 56.9 % de ataques en test, la *accuracy*
+premia al modelo que se inclina hacia la clase mayoritaria, mientras que el MCC solo es alto si se
+aciertan ambas clases. Se reportan además TPR (tasa de detección) y FPR (falsas alarmas), porque en un
+IDS los dos errores tienen costos distintos: un ataque no detectado frente a la fatiga de los
+analistas por falsas alarmas.
+
+```{r xgb-tabla}
+tabla_xgb <- xgb[, c("conjunto", "accuracy", "tpr", "fpr", "f1", "mcc", "auc")]
+tabla_xgb$conjunto <- c("Validación", "Test")
+kable(tabla_xgb, booktabs = TRUE, digits = 3, row.names = FALSE,
+      col.names = c("Conjunto", "Accuracy", "TPR", "FPR", "F1", "MCC", "AUC"),
+      caption = "Desempeño de la línea base XGBoost en NSL-KDD (umbral 0.5).") |>
+  kable_styling(latex_options = "hold_position", font_size = 9) |>
+  row_spec(2, bold = TRUE)
+```
+
+En validación, XGBoost es casi perfecto (MCC 0.998), pero en test el MCC cae a 0.636 y la TPR a 0.654
+(Tabla \@ref(tab:xgb-tabla)). La validación proviene de la misma
+distribución que el train; el test no. La caída no es sobreajuste en sentido estricto, sino **cambio
+de distribución**: el modelo detecta el 77.5 % de los tipos de ataque que vio al entrenar, pero solo
+el 36.2 % de los que aparecen únicamente en test.
+El MCC de 0.636 en test es la referencia
+que el *autoencoder* debe superar; el artículo reporta 0.712, lo que anticipa la hipótesis central: un
+detector de anomalías, que no depende de haber visto cada tipo de ataque, debería generalizar mejor
+ante ataques nuevos.
+
+# Alternativa lineal: PCA {#sec:pca}
+
+Para aislar el aporte de las no linealidades del *autoencoder* se agrega una alternativa que no está
+en el artículo: el análisis de componentes principales (PCA) como detector de anomalías. Un
+*autoencoder* lineal entrenado con error cuadrático aprende el mismo subespacio que el PCA
+[@baldiHornik1989], de modo que este equivale al *autoencoder* sin activaciones ReLU ni capas
+intermedias. El PCA se ajusta solo con los normales del train, con el mismo preprocesamiento (77
+variables); la puntuación de anomalía es la distancia L2 entre cada registro y su reconstrucción desde
+las primeras $k$ componentes, y el umbral se elige con el mismo procedimiento por MCC en validación.
+Se evalúan los mismos valores de $k$ que los tamaños de latente del barrido en (5,64), más los que
+explican el 80, 90, 95 y 99 % de la varianza de los normales ($k$ = 7, 13, 19 y 35). Como en el
+*autoencoder*, $k$ se selecciona por el AUC de validación, sin consultar el test: el elegido es
+$k$ = `r pca_sel$k`, que explica el `r round(100 * pca_sel$var_explicada, 1)` % de la varianza. Al
+ser determinista, no requiere repetir con varias semillas.
+
+# Resultados del autoencoder {#sec:resultados-ae}
+
+## Comparación entre estructuras {#sec:estructuras}
+
+```{r ae-estructuras, eval=ae_listo}
+# Tabla 5 de Song et al. (2021): mejor latente por estructura, promedio de 20 corridas
+song <- data.frame(estructura = c("(5,32)", "(5,64)", "(7,64)"), latente = c(4, 3, 9),
+                   umbral = c(2.846, 2.488, 2.840), accuracy = c(0.840, 0.848, 0.847),
+                   tpr = c(0.757, 0.782, 0.777), fpr = c(0.051, 0.065, 0.061),
+                   mcc = c(0.705, 0.712, 0.711), f1 = c(0.842, 0.853, 0.852),
+                   auc = c(0.960, 0.960, 0.959))
+fase1 <- merge(ae, song[, c("estructura", "latente")])
+met <- c("umbral", "accuracy", "tpr", "fpr", "mcc", "f1", "auc")
+media <- aggregate(fase1[met], fase1[c("estructura", "latente")], mean)
+desv <- aggregate(fase1[met], fase1[c("estructura", "latente")], sd)
+propia <- media
+for (m in met) propia[[m]] <- paste0(f3(media[[m]]), " ± ", f3(desv[[m]]))
+song_fmt <- song; for (m in met) song_fmt[[m]] <- f3(song[[m]])
+comp <- rbind(cbind(fuente = "Réplica", propia), cbind(fuente = "Song et al.", song_fmt))
+comp <- comp[order(comp$estructura, comp$fuente), ]
+kable(comp, booktabs = TRUE, row.names = FALSE, align = c("l", "l", rep("r", 8)), linesep = c("", "\\addlinespace"),
+      col.names = c("Fuente", "Estructura", "z", "Umbral", "Accuracy", "TPR", "FPR", "MCC", "F1", "AUC"),
+      caption = "Mejor latente por estructura: réplica (media ± desviación estándar, 10 semillas) frente a la Tabla 5 de Song et al. (2021, 20 corridas).") |>
+  kable_styling(latex_options = c("hold_position", "scale_down"), font_size = 8)
+```
+
+
+
+Se observan diferencias en las metricas reportadas por los autores. Dichas diferencias se observan en todas las configuraciones reproducidas. La brecha observada posiblemente sea explicada por las inconsistencias metodologicas del articulo, por ejemplo el metodo de eliminacion de outliers, y la funcion de activacion de la capa latente, las cuales no estan explicitas en la metodologia del documento. Apesar de este gap en el desempeño observado, se evidencia una mejora significativa respecto a la linea base, y se concluye que la diferencia no es resultado de un error metodologico, si no de diferencias razonables resultantes de factores no reportados. 
+
+
+## Comparación de modelos {#sec:comparacion}
+
+```{r mcc-modelos, eval=ae_listo, fig.cap="MCC en test según el número de componentes $k$ (PCA) o el tamaño de la capa latente $z$ (\\textit{autoencoder} (5,64), media y desviación estándar sobre 10 semillas). El círculo marca el $k$ seleccionado por AUC de validación.", fig.width=6.2, fig.height=2.1}
+lat <- subset(ae, estructura == "(5,64)")
+res <- aggregate(mcc ~ latente, lat, function(x) c(m = mean(x), s = sd(x)))
+curvas <- rbind(
+  data.frame(x = res$latente, m = res$mcc[, "m"], s = res$mcc[, "s"], modelo = "Autoencoder (5,64)"),
+  data.frame(x = pca$k, m = pca$mcc, s = NA, modelo = "PCA"))
+refs <- data.frame(y = c(xgb_test$mcc, 0.712), etiqueta = c("XGBoost (línea base)", "Song et al., (5,64) z = 3"),
+                   vj = c(1.5, -0.5))
+colores <- c("Autoencoder (5,64)" = COL_AE, "PCA" = COL_TEST)
+ggplot(curvas, aes(x, m, color = modelo)) +
+  geom_hline(data = refs, aes(yintercept = y), linetype = "dashed", color = TINTA_2, linewidth = 0.4) +
+  geom_text(data = refs, aes(x = 35, y = y, label = etiqueta, vjust = vj), inherit.aes = FALSE, hjust = 1,
+            size = 2.5, color = TINTA_2, family = "Lato") +
+  geom_ribbon(data = subset(curvas, !is.na(s)), aes(ymin = m - s, ymax = m + s, fill = modelo),
+              alpha = 0.18, color = NA, show.legend = FALSE) +
+  geom_line(linewidth = 0.7) +
+  geom_point(size = 1.8) +
+  geom_point(data = data.frame(x = pca_sel$k, m = pca_sel$mcc), aes(x, m), inherit.aes = FALSE,
+             shape = 21, size = 4, stroke = 0.7, color = COL_TEST, fill = NA) +
+  scale_color_manual(values = colores) + scale_fill_manual(values = colores) +
+  scale_x_continuous(trans = "log2", breaks = c(1, 2, 3, 4, 6, 8, 12, 16, 24, 31)) +
+  expand_limits(y = 0.62) +
+  labs(x = "Componentes k / tamaño latente z (escala log2)", y = "MCC en test") + tema
+```
+
+Con la selección por validación, el PCA ($k$ = `r pca_sel$k`) obtiene en test un MCC de
+`r f3(pca_sel$mcc)`, por debajo del *autoencoder* seleccionado y por encima de XGBoost (Figura
+\@ref(fig:mcc-modelos)). Su AUC en test, en cambio, es prácticamente igual al del *autoencoder*
+(`r f3(pca_sel$auc)` frente a `r f3(mean(subset(ae, estructura == "(5,64)" & latente == 6)$auc))`):
+ambos ordenan los registros por anomalía de forma similar, y la ventaja del modelo no lineal aparece
+en el punto de corte, sobre todo en U2R y en los ataques nuevos (tasas de detección de
+`r f3(pca_sel$tpr_U2R)` y `r f3(pca_sel$tpr_solo_test)` para el PCA). Con $k$ entre 7 y 13 el PCA
+supera 0.78 de MCC en test, pero la validación no elige esos valores y la curva es inestable entre
+$k$ vecinos: el desempeño en test depende tanto del umbral como del modelo.
+
+```{r ae-vs-xgb, eval=ae_listo, fig.cap="Tasa de detección en test por categoría de ataque y en ataques que solo aparecen en test: XGBoost frente al autoencoder seleccionado (media de 10 semillas). En \\textit{Normal} la tasa es la FPR.", fig.width=6.2, fig.height=2.1}
+# Configuración seleccionada por AUC medio de validación (no por desempeño en test)
+auc_val <- aggregate(auc_val ~ estructura + latente, ae, mean)
+sel <- auc_val[which.max(auc_val$auc_val), ]
+ae_sel <- subset(ae, estructura == sel$estructura & latente == sel$latente)
+etiqueta_ae <- paste0("Autoencoder ", sel$estructura, " z = ", sel$latente)
+cols <- c("fpr", "tpr_DoS", "tpr_Probe", "tpr_R2L", "tpr_U2R", "tpr_solo_test")
+nombres <- c("Normal (FPR)", "DoS", "Probe", "R2L", "U2R", "Ataques nuevos")
+comp_cat <- rbind(
+  data.frame(modelo = "XGBoost", grupo = nombres,
+             tasa = c(xgb_test$fpr, xgb_cat$tasa_ataque[match(c("DoS", "Probe", "R2L", "U2R"), xgb_cat$categoria)],
+                      xgb_nov$tpr[xgb_nov$visto_en_train == "solo en test"])),
+  data.frame(modelo = etiqueta_ae, grupo = nombres, tasa = colMeans(ae_sel[cols])))
+comp_cat$grupo <- factor(comp_cat$grupo, levels = nombres)
+comp_cat$modelo <- factor(comp_cat$modelo, levels = c("XGBoost", etiqueta_ae))
+ggplot(comp_cat, aes(grupo, tasa, fill = modelo)) +
+  geom_col(position = position_dodge(width = 0.75), width = 0.7, color = "white", linewidth = 0.4) +
+  geom_text(aes(label = f3(tasa)), position = position_dodge(width = 0.75), vjust = -0.4,
+            size = 2.3, color = TINTA, family = "Lato") +
+  scale_fill_manual(values = setNames(c(COL_XGB, COL_AE), c("XGBoost", etiqueta_ae))) +
+  scale_y_continuous(limits = c(0, 1.08), breaks = seq(0, 1, 0.25)) +
+  labs(x = NULL, y = "Tasa clasificada como ataque") + tema
+```
+
+
+
+```{r pend-latente, results="asis"}
+pendiente("Los resultados de la ejecucion independiente coinciden con  los hallazgos reportados en el trabajo guia. Se puede concluir en base al experimento que el tamaño del espacio latente solo genera mejoras marginales en el desempeño para la deteccion de nuevos ataques.
+
+Respecto al desempeño del autoencoder frente al modelo de base si se puede observar una  mejora significativa en la deteccion de nuevos tipos de ataque. El desempeño no es homogeneo entre tipos de ataque, y hay clases en las que aun queda mucho margen de mejora. Sin embargo de manera preliminar se puede justificar la implementacion del autoencoder, pues su mecanismo de aprendizaje le permite generalizar mejor ante protocolos no vistos durante el entrenamiento. 
+
+Por otra parte PCA genera un desempeño sorprendentemente alto. Si bien el autoencoer obitene el mejor MCC, la diferencia general es pequeña, por lo que se concluye que el componente no lineal aportado por el autoencoder puede no ser tan significativo. Sin embargo, el autoencoder justifica su implementacion al detectar los ataques dificiles:  detecta el 49 % de U2R contra el 27 % del PCA, y el 63 % de los ataques nuevos contra el 53 %.
+          ")
+```
+
+
+
+**Reproducibilidad.** El código completo está en `script.ipynb` (semilla 42; corridas del
+*autoencoder* con semillas 42 a 51), y los resultados se guardan en la carpeta `resultados/`. Se usaron
+herramientas de inteligencia artificial generativa (claude Opus 5.5 y Sonnet 5.5) como apoyo en la implementación y la redacción;
+todas las decisiones técnicas fueron revisadas y pueden sustentarse.
+
+<!-- ===================== REFERENCIAS (sin numerar) ===================== -->
+<!-- La bibliografía se inserta automáticamente en el div #refs; no escribir
+     referencias a mano. Solo aparecen las obras efectivamente citadas. -->
+
+# Referencias {-}
+
+::: {#refs}
+:::
