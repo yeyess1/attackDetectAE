@@ -1,0 +1,6 @@
+método,es el mejor,frontera (us_por_registro),frontera (seg_ajuste),frontera (memoria_MB)
+PCA (completo),0.0,1.0,0.0,1.0
+PCA (submuestra),0.0,1.0,1.0,1.0
+Kernel PCA (submuestra),0.4878,0.4878,1.0,0.4878
+"AE (3,w) (completo)",0.0,0.0,0.2802,0.1354
+"AE (3,w) (submuestra)",0.5122,0.9978,0.5122,0.9978

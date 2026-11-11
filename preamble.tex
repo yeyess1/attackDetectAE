@@ -1,0 +1,130 @@
+% ===== Paquetes =====
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage[most]{tcolorbox}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{float}          % opción [H]: fija la figura donde se declara
+\usepackage{enumitem}
+% Pandoc carga parskip ANTES de este preámbulo y parskip redefine \@starttoc;
+% eso hacía que tocloft se inhibiera ("tocloft bailing out") y el TOC perdiera
+% el formato institucional. Se restaura la definición del kernel y luego se carga tocloft.
+% (la definición debe coincidir token a token con la del kernel: \def, no
+%  \newcommand, porque tocloft la compara con \ifx)
+\makeatletter
+\def\@starttoc#1{%
+ \begingroup
+   \makeatletter
+   \@input{\jobname.#1}%
+   \if@filesw
+     \expandafter\newwrite\csname tf@#1\endcsname
+     \immediate\openout \csname tf@#1\endcsname \jobname.#1\relax
+   \fi
+  \@nobreakfalse
+\endgroup}
+\makeatother
+\usepackage{tocloft}
+\usepackage{parskip}          % espacio entre párrafos, sin sangría
+\usepackage{tikz}
+\usetikzlibrary{calc, positioning, arrows.meta, fit, backgrounds}
+
+% ===== Colores institucionales — Universidad Externado de Colombia =====
+% Tomados de la hoja de estilos vigente del sitio oficial (uexternado.edu.co,
+% tema WordPress "externado_theme" + pattern-lab-externado-prod), no de un
+% manual de marca publicado (no se localizó uno público con códigos Pantone).
+\definecolor{extVerde}{HTML}{4D7B19}      % verde institucional primario (bordes, acentos, enlaces)
+\definecolor{extVerdeClaro}{HTML}{78B92F} % verde secundario (enlaces sobre fondo oscuro, resaltes)
+\definecolor{extVerdeOscuro}{HTML}{00522C} % verde profundo (bandas, contraste fuerte)
+\definecolor{extDorado}{HTML}{E7A900}     % dorado/mostaza (del escudo/bandera institucional)
+\definecolor{extNegro}{HTML}{1A1A1A}
+\definecolor{extGris}{HTML}{58595B}       % gris neutro para texto secundario (no tomado del sitio;
+                                           % elección propia, análoga al rol de ipnGris)
+
+% Colores de apoyo para diagramas (armonizados con la paleta institucional)
+\definecolor{diagAzul}{HTML}{2F4B7C}
+\definecolor{diagDorado}{HTML}{B5810F}
+\definecolor{diagVerdeOscuro}{HTML}{00522C}
+
+% ===== Estilos de diagrama de flujo (genéricos, listos para usar) =====
+\tikzset{
+  paso/.style={
+    draw, rounded corners=3pt, line width=0.7pt,
+    text width=6.1cm, align=center, inner sep=6pt, font=\sffamily\small,
+  },
+  % (el título del paso se compone con \pasotitulo, definido abajo)
+  neutro/.style={paso, draw=extGris,       fill=extGris!7,       text=extNegro},
+  principal/.style={paso, draw=extVerde,   fill=extVerde!7,      text=extVerde},
+  secundario/.style={paso, draw=diagAzul,  fill=diagAzul!7,      text=diagAzul},
+  destacado/.style={paso, draw=diagDorado, fill=diagDorado!10,   text=diagDorado},
+  final/.style={paso, draw=diagVerdeOscuro, fill=diagVerdeOscuro!8, text=diagVerdeOscuro},
+  etapa/.style={font=\sffamily\footnotesize\bfseries, text=extNegro, anchor=west},
+  flujo/.style={-{Stealth[length=2.4mm]}, draw=extGris, line width=0.7pt},
+  clave/.style={draw, rounded corners=2pt, line width=0.6pt,
+                font=\sffamily\scriptsize, inner sep=3pt, text width=2.5cm, align=center},
+}
+% Título en negrita dentro de una caja del diagrama
+\newcommand{\pasotitulo}[1]{{\bfseries #1}}
+
+% Color de texto base
+\color{extNegro}
+
+% ===== Títulos (Lato vía \sffamily + verde) =====
+% "action titles": van en \section como oraciones completas
+\titleformat{\section}
+  {\sffamily\bfseries\large\color{extVerde}}{\thesection}{0.6em}{}
+\titleformat{\subsection}
+  {\sffamily\bfseries\normalsize\color{extNegro}}{\thesubsection}{0.6em}{}
+\titleformat{\subsubsection}
+  {\sffamily\bfseries\small\color{extGris}}{}{0em}{}
+\titlespacing*{\section}{0pt}{14pt}{5pt}
+\titlespacing*{\subsection}{0pt}{10pt}{3pt}
+
+% ===== Pie de página con numeración =====
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\renewcommand{\footrule}{\hbox to\headwidth{\color{extGris!40}\leaders\hrule height \footrulewidth\hfill}}
+\fancyfoot[L]{\sffamily\footnotesize\color{extGris}%
+  Universidad Externado de Colombia · Informe de Deep Learning}
+\fancyfoot[R]{\sffamily\footnotesize\color{extGris}%
+  Pág. \thepage\ de \pageref{LastPage}}
+
+
+
+% (tocloft se carga arriba, antes de parskip)
+\renewcommand{\cftsecfont}{\sffamily\bfseries\color{extNegro}}
+\renewcommand{\cftsecpagefont}{\sffamily\color{extGris}}
+\renewcommand{\cftsubsecfont}{\sffamily\color{extGris}}
+\renewcommand{\cftsubsecpagefont}{\sffamily\color{extGris}}
+\renewcommand{\cfttoctitlefont}{\sffamily\bfseries\LARGE\color{extVerde}}
+\setlength{\cftbeforesecskip}{6pt}
+% Etiquetas anchas tipo "Anexo A" / "Anexo C.1": la caja del número por defecto
+% (~2.3em) es muy angosta y la etiqueta se sale y se solapa con el título. Se ensancha:
+\setlength{\cftsecnumwidth}{4.7em}      % número de sección: cabe "Anexo A"
+\setlength{\cftsubsecindent}{4.7em}     % subsección alineada bajo el título de sección
+\setlength{\cftsubsecnumwidth}{5.6em}   % número de subsección: cabe "Anexo C.1"
+
+% ===== Pies de figura/tabla =====
+\captionsetup{font=small, labelfont={sf,bf,color=extVerde}, textfont={sf}}
+% babel-spanish rotula las tablas como "Cuadro"; se prefiere "Tabla",
+% que además es como se las nombra habitualmente en el cuerpo del texto.
+\addto\captionsspanish{\renewcommand{\tablename}{Tabla}}
+
+% ===== Caja "pensamiento gobernante" / callouts =====
+\newtcolorbox{govbox}{
+  enhanced, breakable, boxrule=0pt, leftrule=3pt,
+  colback=extVerde!6, colframe=extVerde,
+  arc=1pt, left=10pt, right=10pt, top=8pt, bottom=8pt,
+  fontupper=\normalsize
+}
+
+% ===== Metadatos del PDF =====
+\usepackage{hyperref}
+\hypersetup{
+  pdftitle={Informe de Deep Learning — Universidad Externado de Colombia},
+  pdfauthor={Yeiver Estevan Sanabria Sánchez},
+  colorlinks=true, linkcolor=extVerde, urlcolor=extVerde, citecolor=extVerde
+}
