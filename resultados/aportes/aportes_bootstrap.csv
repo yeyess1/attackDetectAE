@@ -1,0 +1,11 @@
+aporte,comparación,métrica,diferencia,ic_2.5,ic_97.5,p_positiva
+No linealidad fija,Kernel PCA (submuestra) − PCA (submuestra),AUC,-0.008221947646285588,-0.0095367634614833,-0.006987566421693306,0.0
+No linealidad fija,Kernel PCA (submuestra) − PCA (submuestra),MCC,-0.019373049298151757,-0.025928553595963605,-0.012666223053188081,0.0
+Representación aprendida (gradiente),"AE (3,w) (submuestra) − Kernel PCA (submuestra)",AUC,0.004857180752533274,0.003937342843976841,0.005781457379202779,1.0
+Representación aprendida (gradiente),"AE (3,w) (submuestra) − Kernel PCA (submuestra)",MCC,0.06644317279021617,0.06164470308908811,0.07140972760925347,1.0
+Más datos: AE,"AE (3,w) (completo) − AE (3,w) (submuestra)",AUC,-0.004985399642435051,-0.005829073079863428,-0.004204477221168923,0.0
+Más datos: AE,"AE (3,w) (completo) − AE (3,w) (submuestra)",MCC,-0.015768198059047722,-0.018663169102596255,-0.012823648132768265,0.0
+Más datos: PCA,PCA (completo) − PCA (submuestra),AUC,-0.0004220387334704645,-0.0005111614950697007,-0.0003334152351301745,0.0
+Más datos: PCA,PCA (completo) − PCA (submuestra),MCC,0.014115352519517566,0.011681870840224507,0.016655309376164502,1.0
+"Total deep learning (AE − PCA, completo)","AE (3,w) (completo) − PCA (completo)",AUC,-0.0079281278027169,-0.009013346143098566,-0.006853507902676923,0.0
+"Total deep learning (AE − PCA, completo)","AE (3,w) (completo) − PCA (completo)",MCC,0.01718657291349912,0.013882397275097704,0.020369044635862598,1.0
