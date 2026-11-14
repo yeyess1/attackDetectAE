@@ -5,3 +5,5 @@ proyecto.zip
 .idea/
 informe_files/
 *.pdf
+.Rhistory
+*.log
