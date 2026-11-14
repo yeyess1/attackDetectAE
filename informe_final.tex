@@ -1,0 +1,665 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+  11pt,
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+  \setmainfont[]{Source Serif Pro}
+  \setsansfont[Extension=.ttf,UprightFont=Lato-Regular,BoldFont=Lato-Bold,ItalicFont=Lato-Italic,BoldItalicFont=Lato-BoldItalic]{Lato}
+  \setmonofont[]{DejaVu Sans Mono}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[a4paper, top=2.2cm, bottom=2.2cm, left=2.6cm, right=2.6cm]{geometry}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{5}
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newlength{\cslentryspacingunit} % times entry-spacing
+\setlength{\cslentryspacingunit}{\parskip}
+\newenvironment{CSLReferences}[2] % #1 hanging-ident, #2 entry spacing
+ {% don't indent paragraphs
+  \setlength{\parindent}{0pt}
+  % turn on hanging indent if param 1 is 1
+  \ifodd #1
+  \let\oldpar\par
+  \def\par{\hangindent=\cslhangindent\oldpar}
+  \fi
+  % set entry spacing
+  \setlength{\parskip}{#2\cslentryspacingunit}
+ }%
+ {}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{#1\hfill\break}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{#1}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{#1}\break}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
+\ifLuaTeX
+\usepackage[bidi=basic]{babel}
+\else
+\usepackage[bidi=default]{babel}
+\fi
+\babelprovide[main,import]{spanish}
+\ifPDFTeX
+\else
+\babelfont{rm}[]{Source Serif Pro}
+\fi
+% get rid of language-specific shorthands (see #6817):
+\let\LanguageShortHands\languageshorthands
+\def\languageshorthands#1{}
+% ===== Paquetes =====
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage[most]{tcolorbox}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{float}          % opción [H]: fija la figura donde se declara
+\usepackage{enumitem}
+% Pandoc carga parskip ANTES de este preámbulo y parskip redefine \@starttoc;
+% eso hacía que tocloft se inhibiera ("tocloft bailing out") y el TOC perdiera
+% el formato institucional. Se restaura la definición del kernel y luego se carga tocloft.
+% (la definición debe coincidir token a token con la del kernel: \def, no
+%  \newcommand, porque tocloft la compara con \ifx)
+\makeatletter
+\def\@starttoc#1{%
+ \begingroup
+   \makeatletter
+   \@input{\jobname.#1}%
+   \if@filesw
+     \expandafter\newwrite\csname tf@#1\endcsname
+     \immediate\openout \csname tf@#1\endcsname \jobname.#1\relax
+   \fi
+  \@nobreakfalse
+\endgroup}
+\makeatother
+\usepackage{tocloft}
+\usepackage{parskip}          % espacio entre párrafos, sin sangría
+\usepackage{tikz}
+\usetikzlibrary{calc, positioning, arrows.meta, fit, backgrounds}
+
+% ===== Colores institucionales — Universidad Externado de Colombia =====
+% Tomados de la hoja de estilos vigente del sitio oficial (uexternado.edu.co,
+% tema WordPress "externado_theme" + pattern-lab-externado-prod), no de un
+% manual de marca publicado (no se localizó uno público con códigos Pantone).
+\definecolor{extVerde}{HTML}{4D7B19}      % verde institucional primario (bordes, acentos, enlaces)
+\definecolor{extVerdeClaro}{HTML}{78B92F} % verde secundario (enlaces sobre fondo oscuro, resaltes)
+\definecolor{extVerdeOscuro}{HTML}{00522C} % verde profundo (bandas, contraste fuerte)
+\definecolor{extDorado}{HTML}{E7A900}     % dorado/mostaza (del escudo/bandera institucional)
+\definecolor{extNegro}{HTML}{1A1A1A}
+\definecolor{extGris}{HTML}{58595B}       % gris neutro para texto secundario (no tomado del sitio;
+                                           % elección propia, análoga al rol de ipnGris)
+
+% Colores de apoyo para diagramas (armonizados con la paleta institucional)
+\definecolor{diagAzul}{HTML}{2F4B7C}
+\definecolor{diagDorado}{HTML}{B5810F}
+\definecolor{diagVerdeOscuro}{HTML}{00522C}
+
+% ===== Estilos de diagrama de flujo (genéricos, listos para usar) =====
+\tikzset{
+  paso/.style={
+    draw, rounded corners=3pt, line width=0.7pt,
+    text width=6.1cm, align=center, inner sep=6pt, font=\sffamily\small,
+  },
+  % (el título del paso se compone con \pasotitulo, definido abajo)
+  neutro/.style={paso, draw=extGris,       fill=extGris!7,       text=extNegro},
+  principal/.style={paso, draw=extVerde,   fill=extVerde!7,      text=extVerde},
+  secundario/.style={paso, draw=diagAzul,  fill=diagAzul!7,      text=diagAzul},
+  destacado/.style={paso, draw=diagDorado, fill=diagDorado!10,   text=diagDorado},
+  final/.style={paso, draw=diagVerdeOscuro, fill=diagVerdeOscuro!8, text=diagVerdeOscuro},
+  etapa/.style={font=\sffamily\footnotesize\bfseries, text=extNegro, anchor=west},
+  flujo/.style={-{Stealth[length=2.4mm]}, draw=extGris, line width=0.7pt},
+  clave/.style={draw, rounded corners=2pt, line width=0.6pt,
+                font=\sffamily\scriptsize, inner sep=3pt, text width=2.5cm, align=center},
+}
+% Título en negrita dentro de una caja del diagrama
+\newcommand{\pasotitulo}[1]{{\bfseries #1}}
+
+% Color de texto base
+\color{extNegro}
+
+% ===== Títulos (Lato vía \sffamily + verde) =====
+% "action titles": van en \section como oraciones completas
+\titleformat{\section}
+  {\sffamily\bfseries\large\color{extVerde}}{\thesection}{0.6em}{}
+\titleformat{\subsection}
+  {\sffamily\bfseries\normalsize\color{extNegro}}{\thesubsection}{0.6em}{}
+\titleformat{\subsubsection}
+  {\sffamily\bfseries\small\color{extGris}}{}{0em}{}
+\titlespacing*{\section}{0pt}{14pt}{5pt}
+\titlespacing*{\subsection}{0pt}{10pt}{3pt}
+
+% ===== Pie de página con numeración =====
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\renewcommand{\footrule}{\hbox to\headwidth{\color{extGris!40}\leaders\hrule height \footrulewidth\hfill}}
+\fancyfoot[L]{\sffamily\footnotesize\color{extGris}%
+  Universidad Externado de Colombia · Informe de Deep Learning}
+\fancyfoot[R]{\sffamily\footnotesize\color{extGris}%
+  Pág. \thepage\ de \pageref{LastPage}}
+
+
+
+% (tocloft se carga arriba, antes de parskip)
+\renewcommand{\cftsecfont}{\sffamily\bfseries\color{extNegro}}
+\renewcommand{\cftsecpagefont}{\sffamily\color{extGris}}
+\renewcommand{\cftsubsecfont}{\sffamily\color{extGris}}
+\renewcommand{\cftsubsecpagefont}{\sffamily\color{extGris}}
+\renewcommand{\cfttoctitlefont}{\sffamily\bfseries\LARGE\color{extVerde}}
+\setlength{\cftbeforesecskip}{6pt}
+% Etiquetas anchas tipo "Anexo A" / "Anexo C.1": la caja del número por defecto
+% (~2.3em) es muy angosta y la etiqueta se sale y se solapa con el título. Se ensancha:
+\setlength{\cftsecnumwidth}{4.7em}      % número de sección: cabe "Anexo A"
+\setlength{\cftsubsecindent}{4.7em}     % subsección alineada bajo el título de sección
+\setlength{\cftsubsecnumwidth}{5.6em}   % número de subsección: cabe "Anexo C.1"
+
+% ===== Pies de figura/tabla =====
+\captionsetup{font=small, labelfont={sf,bf,color=extVerde}, textfont={sf}}
+% babel-spanish rotula las tablas como "Cuadro"; se prefiere "Tabla",
+% que además es como se las nombra habitualmente en el cuerpo del texto.
+\addto\captionsspanish{\renewcommand{\tablename}{Tabla}}
+
+% ===== Caja "pensamiento gobernante" / callouts =====
+\newtcolorbox{govbox}{
+  enhanced, breakable, boxrule=0pt, leftrule=3pt,
+  colback=extVerde!6, colframe=extVerde,
+  arc=1pt, left=10pt, right=10pt, top=8pt, bottom=8pt,
+  fontupper=\normalsize
+}
+
+% ===== Metadatos del PDF =====
+\usepackage{hyperref}
+\hypersetup{
+  pdftitle={Informe de Deep Learning — Universidad Externado de Colombia},
+  pdfauthor={Yeiver Estevan Sanabria Sánchez},
+  colorlinks=true, linkcolor=extVerde, urlcolor=extVerde, citecolor=extVerde
+}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdflang={es},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\author{}
+\date{\vspace{-2.5em}}
+
+\begin{document}
+
+\begin{titlepage}
+\thispagestyle{empty}
+
+\begin{tikzpicture}[remember picture, overlay]
+  \fill[extVerde] (current page.north west) rectangle
+       ($(current page.north east)+(0,-6.2cm)$);
+  \fill[extGris] ($(current page.north west)+(0,-6.2cm)$) rectangle
+       ($(current page.north east)+(0,-6.35cm)$);
+  \node[anchor=north west, align=left, inner sep=0pt]
+    at ($(current page.north west)+(2.6cm,-2.2cm)$)
+    {\sffamily\bfseries\color{white}\LARGE UNIVERSIDAD EXTERNADO DE COLOMBIA\\[0.35cm]
+     \sffamily\color{white}\Large Departamento de Matemáticas --- Pregrado en Ciencia de Datos};
+\end{tikzpicture}
+
+\vspace*{7.5cm}
+
+\begin{flushleft}
+{\sffamily\bfseries\color{extGris}\large INFORME TÉCNICO FINAL\par}
+\vspace{0.35cm}
+{\color{extVerde}\rule{3.2cm}{2pt}\par}
+\vspace{0.9cm}
+
+{\sffamily\bfseries\color{extNegro}\LARGE
+Autoencoders frente a métodos de solución cerrada para la detección de intrusiones en red\par}
+
+\vspace{0.8cm}
+{\itshape\large\color{extGris}
+Auditoría del aporte del aprendizaje profundo en NSL-KDD: PCA, kernel PCA y autoencoder a igual capacidad.\par}
+\end{flushleft}
+
+\vfill
+
+\begin{flushleft}
+{\sffamily\normalsize\color{extNegro}%
+\setlength{\tabcolsep}{0pt}%
+\renewcommand{\arraystretch}{1.5}%
+\begin{tabular}{@{}ll@{}}
+\makebox[5cm][l]{\color{extVerde}\bfseries Autor}    & Yeiver Estevan Sanabria Sánchez\\
+\makebox[4.2cm][l]{\color{extVerde}\bfseries Programa} & Pregrado en Ciencia de Datos\\
+\makebox[4.2cm][l]{\color{extVerde}\bfseries Profesor} & Wilmer Pineda Ríos\\
+\end{tabular}\par}
+\end{flushleft}
+
+\vspace{1.2cm}
+
+\begin{tikzpicture}[remember picture, overlay]
+  \fill[extVerde] (current page.south west) rectangle
+       ($(current page.south east)+(0,1.6cm)$);
+  \node[anchor=west, inner sep=0pt]
+    at ($(current page.south west)+(2.6cm,0.8cm)$)
+    {\sffamily\footnotesize\color{white} Noviembre de 2026};
+  \node[anchor=east, inner sep=0pt]
+    at ($(current page.south east)+(-2.6cm,0.8cm)$)
+    {\sffamily\footnotesize\color{white} Versión 2.0 \quad·\quad Entrega final};
+\end{tikzpicture}
+
+\end{titlepage}
+
+\newtcolorbox{pendiente}{
+  enhanced, boxrule=0.6pt, colback=extDorado!8, colframe=extDorado,
+  arc=1pt, left=8pt, right=8pt, top=5pt, bottom=5pt,
+  fontupper=\sffamily\small\color{extGris}, title={Conclusiones},
+  fonttitle=\sffamily\bfseries\small, coltitle=extNegro, colbacktitle=extDorado!35
+}
+
+\hypertarget{sec:contexto}{%
+\section{Contexto y pregunta}\label{sec:contexto}}
+
+En la entrega anterior se replicó el estudio de Song et~al. (\protect\hyperlink{ref-songAutoencoders2021}{2021}) sobre NSL-KDD: un \emph{autoencoder}
+entrenado solo con tráfico normal detecta ataques cuando su error de reconstrucción supera un umbral.
+La réplica superó a la línea base supervisada (XGBoost, MCC de 0.636 en test), sobre todo en ataques
+que no aparecen en el entrenamiento. Sin embargo, una alternativa lineal, el PCA, quedó muy cerca del
+\emph{autoencoder}: su AUC en test fue prácticamente igual y las diferencias de MCC venían del umbral. Como
+no existe un conjunto público colombiano de tráfico de red etiquetado (\protect\hyperlink{ref-brionesLascano2026}{Briones-Lascano et~al., 2026}; \protect\hyperlink{ref-pavonUnda2022}{Pavón Unda et~al., 2022}), la fase de traslado se reemplazó por esta auditoría sobre el propio NSL-KDD.
+
+Esta entrega responde la pregunta que dejó abierta ese resultado: \textbf{¿cuánto aporta un \emph{autoencoder}
+entrenado por descenso del gradiente frente a métodos de reconstrucción con solución cerrada?} Para
+responderla se descompone el aporte del aprendizaje profundo en tres factores: la no linealidad, el
+aprendizaje de la representación y la cantidad de datos de entrenamiento.
+
+\hypertarget{sec:diseno}{%
+\section{Diseño del experimento}\label{sec:diseno}}
+
+Los tres métodos comparten el mismo esquema: comprimir cada registro a \(k\) dimensiones, reconstruirlo
+y usar la distancia L2 entre el registro y su reconstrucción como puntuación de anomalía. Difieren en un
+solo factor cada vez (Tabla \ref{tab:metodos}). Todos usan el mismo \emph{split}, el mismo preprocesamiento
+de la entrega anterior (77 variables) y se ajustan solo con tráfico normal.
+
+\begin{table}[!h]
+\centering
+\caption{\label{tab:metodos}Métodos comparados. Cada fila agrega un factor respecto a la anterior.}
+\centering
+\fontsize{8}{10}\selectfont
+\begin{tabular}[t]{>{\raggedright\arraybackslash}p{2.2cm}>{\raggedright\arraybackslash}p{3.6cm}>{\raggedright\arraybackslash}p{5.4cm}>{\raggedright\arraybackslash}p{3.2cm}}
+\toprule
+Método & Representación & Cómo se obtiene & Hiperparámetros\\
+\midrule
+PCA & Lineal & Solución cerrada: vectores propios de la covarianza & k\\
+Kernel PCA (RBF) & No lineal, fija (la define el kernel) & Solución cerrada: vectores propios de la matriz kernel & k; γ = γ0 (mediana), alpha = 1\\
+AE (3, w) & No lineal, aprendida & Descenso del gradiente (Adam), entrada–w–z–w–salida & z = k; w = 64\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Por qué un AE (3, \emph{w}).} Kernel PCA equivale a una red con una capa oculta muy ancha de neuronas RBF
+fijas (una por punto de ajuste) a cada lado de la latente. El AE (3, \emph{w}) tiene la misma estructura, pero
+con \emph{w} neuronas ReLU aprendidas. Así, la diferencia AE − kernel PCA no mide la profundidad, sino el
+aporte de \textbf{aprender} la representación frente a fijarla con un kernel. El AE (5,64) de la entrega
+anterior se conserva como referencia de mayor profundidad.
+
+\textbf{Control de los datos.} Kernel PCA no cabe en memoria con los 53 874 normales del train (la matriz
+kernel ocuparía unos 23 GB), por lo que se usa una submuestra de 10 000 normales, estratificada por
+\texttt{service} para no dejar fuera servicios normales poco frecuentes. Los tres métodos se ajustan con esa
+submuestra; PCA y el AE, además, con los datos completos. Para que la submuestra no recibiera cinco veces
+menos actualizaciones de pesos, el AE se entrena con el mismo presupuesto en ambas condiciones: un tope
+de 12 000 actualizaciones (114 épocas con datos completos y 600 con la submuestra), \emph{early stopping}
+con paciencia de cinco evaluaciones alineadas cada \textasciitilde200 actualizaciones, y semillas 42 a 46. Kernel PCA
+se implementó en TensorFlow para medir los tres métodos en la misma GPU, y se verificó contra
+scikit-learn (diferencia de \(3 \times 10^{-5}\) en el error de reconstrucción, con la misma AUC).
+
+\textbf{Comparación a igual capacidad.} Un primer análisis eligió \(k\), γ y alpha por AUC de validación,
+como en la entrega anterior. Esa selección resultó poco fiable (Sección \ref{sec:brecha}), así que el
+análisis principal \textbf{no elige nada}: compara los métodos con la misma dimensión latente,
+\(k = z \in \{2, 4, 6, 8, 12, 16\}\), con γ y alpha fijados a priori, y resume cada aporte como el
+promedio de las diferencias de AUC en test sobre la rejilla. La incertidumbre se estima con un
+\emph{bootstrap} pareado de test (1000 remuestreos con los mismos índices para todos los métodos). La AUC es
+la métrica principal porque no depende del umbral; como complemento se reporta la tasa de detección a
+una tasa de falsos positivos fija (TPR a FPR = 1 \% y 5 \%).
+
+\hypertarget{sec:aportes}{%
+\section{Resultados: el aporte de cada factor}\label{sec:aportes}}
+
+\begin{table}[!h]
+\centering
+\caption{\label{tab:tabla-aportes}Aportes a igual capacidad: diferencia promedio sobre k = 2 a 16 en test, con IC del 95 \% por bootstrap pareado.}
+\centering
+\resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{
+\fontsize{8}{10}\selectfont
+\begin{tabular}[t]{>{\raggedright\arraybackslash}p{2.8cm}>{\raggedright\arraybackslash}p{4.4cm}rccrr}
+\toprule
+Aporte & Comparación & Δ AUC & IC 95 \% & k ganados & Δ TPR@5 \% & Δ TPR@1 \%\\
+\midrule
+No linealidad fija & Kernel PCA (submuestra) − PCA (submuestra) & +0.0054 & {}[+0.0049, +0.0060] & 6 de 6 & 0.026 & 0.106\\
+Representación aprendida (gradiente) & AE (3,w) (submuestra) − Kernel PCA (submuestra) & -0.0067 & {}[-0.0071, -0.0062] & 0 de 6 & -0.022 & 0.035\\
+Más datos: AE & AE (3,w) (completo) − AE (3,w) (submuestra) & -0.0013 & {}[-0.0014, -0.0011] & 1 de 6 & 0.005 & -0.022\\
+Más datos: PCA & PCA (completo) − PCA (submuestra) & -0.0005 & {}[-0.0005, -0.0004] & 0 de 6 & -0.001 & -0.005\\
+Total deep learning (AE − PCA, completo) & AE (3,w) (completo) − PCA (completo) & -0.0021 & {}[-0.0028, -0.0013] & 3 de 6 & 0.009 & 0.125\\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\begin{figure}[!htb]
+\includegraphics{informe_final_files/figure-latex/delta-k-1} \caption{Diferencia de AUC en test en función de la capacidad $k = z$. El punto es la diferencia con todo el test y la banda su IC del 95 \% (bootstrap pareado); la línea horizontal es el promedio sobre la rejilla. Por encima de cero gana el primer método.}\label{fig:delta-k}
+\end{figure}
+
+La Tabla \ref{tab:tabla-aportes} y la Figura \ref{fig:delta-k} resumen el resultado principal. Todas
+las diferencias son pequeñas, por debajo de 0.012 de AUC, pero tres conclusiones se sostienen:
+
+\textbf{No linealidad fija.} Kernel PCA supera a PCA con los mismos datos: Δ AUC = +0.0054,
+con un IC que no incluye el cero y el mismo signo en los seis valores de \(k\) (en \(k\) = 2 la diferencia es
+casi nula). Es la conclusión más sólida, porque ninguno de los dos métodos depende de una semilla.
+
+\textbf{Representación aprendida.} Con los mismos datos y la misma estructura, el AE pierde frente a kernel
+PCA: Δ AUC = -0.0067, sin ganar en ningún \(k\). Aprender la representación por
+gradiente no supera a fijarla con un kernel RBF.
+
+\textbf{Cantidad de datos.} Pasar de 10 000 a 53 874 normales no mejora a ningún método: la AUC baja
+ligeramente en el AE (-0.0013) y en PCA (-0.0005). PCA casi no
+cambia porque con la submuestra ya estima bien la covarianza; el AE es algo más sensible, pero en la
+dirección contraria a la esperada. Una hipótesis, no verificada, es que una normalidad más diversa le
+permite al AE reconstruir mejor también algunos ataques, lo que reduce el contraste del error entre
+tráfico normal y ataque. La escalabilidad con los datos, que suele citarse como ventaja del aprendizaje
+profundo, no se observa en este problema.
+
+En conjunto, el aporte total del aprendizaje profundo frente a PCA es nulo en AUC
+(-0.0021, con el signo cambiando según \(k\): gana en 3 de 6). La
+profundidad tampoco lo cambia: el AE (5,64) de la entrega anterior obtiene una AUC en test de
+0.955 frente a 0.953 del
+AE (3,64), una diferencia dentro de la variación entre semillas y coherente con Song et~al. (\protect\hyperlink{ref-songAutoencoders2021}{2021}),
+que tampoco encuentran efecto de la profundidad. Los protocolos de ambos AE difieren (épocas y
+\emph{early stopping}), así que este último punto no queda del todo confirmado.
+
+\begin{figure}[!htb]
+\includegraphics{informe_final_files/figure-latex/desempeno-1} \caption{Desempeño a igual capacidad (promedio sobre $k$) con IC del 95 \% del \textit{bootstrap} pareado de test. Los intervalos no incluyen la variación entre semillas del AE.}\label{fig:desempeno}
+\end{figure}
+
+\textbf{La conclusión depende del punto de operación.} La Figura \ref{fig:desempeno} muestra que la AUC no
+cuenta toda la historia. A una FPR de 5 \%, kernel PCA es el mejor (TPR de
+0.773 frente a
+0.746 de PCA) y el AE queda en un punto
+intermedio. A una FPR de 1 \%, que es el régimen realista para un sistema de detección por la fatiga de
+alarmas, el AE y kernel PCA detectan cerca de la mitad de los ataques, contra un tercio de PCA. Además,
+PCA es el más sensible a \(k\) (TPR a FPR = 5 \% entre 0.69 y 0.79) y el AE el más estable (entre 0.74 y
+0.78). Con las configuraciones elegidas por validación, el AE obtiene el mayor MCC
+(0.682), pero opera con una FPR de
+0.051 frente a 0.018 de PCA, así que parte
+de esa ventaja viene de la calibración del umbral y no de una mejor puntuación de anomalía.
+
+\begin{figure}[!htb]
+\includegraphics{informe_final_files/figure-latex/entrenamiento-1} \caption{Curvas de entrenamiento del AE (3,64) con la latente elegida en cada condición: AUC de validación por actualización de pesos, una línea por semilla. Cada curva termina donde actuó el \textit{early stopping}.}\label{fig:entrenamiento}
+\end{figure}
+
+\textbf{Estabilidad del entrenamiento.} Las curvas (Figura \ref{fig:entrenamiento}) muestran que el AE
+alcanza una AUC de validación cercana a 0.99 en pocos cientos de actualizaciones y luego se estanca:
+con datos completos el \emph{early stopping} detiene cuatro de las cinco corridas entre 5300 y 11 500
+actualizaciones, y con la submuestra todas llegan al tope con mejoras ya marginales. Ambas condiciones
+convergen a la misma meseta, así que la diferencia entre ellas no se explica por un entrenamiento
+incompleto. Esa meseta tan alta y tan temprana anticipa
+el problema de la siguiente sección.
+
+\hypertarget{sec:auditoria}{%
+\section{Auditoría: qué separa a los ataques}\label{sec:auditoria}}
+
+\hypertarget{sec:brecha}{%
+\subsection{Brecha entre validación y test}\label{sec:brecha}}
+
+\begin{table}[!h]
+\centering
+\caption{\label{tab:brecha}Diferencias entre la validación (20 \% de KDDTrain+) y el test (KDDTest+).}
+\centering
+\fontsize{9}{11}\selectfont
+\begin{tabular}[t]{lrr}
+\toprule
+ & Validación & Test\\
+\midrule
+Ataques (\%) & 46.5 & 56.9\\
+Tipos de ataque & 20 & 37\\
+Ataques de tipos no vistos en el train (\%) & 0.0 & 29.2\\
+Ataques con una categoría que ningún normal usó (\%) & 31.2 & 10.5\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[!htb]
+\includegraphics{informe_final_files/figure-latex/val-test-1} \caption{AUC de validación frente a AUC de test de todas las configuraciones evaluadas. $\rho$: correlación de Spearman. Si la validación anticipara el test, los puntos estarían ordenados igual en ambos ejes.}\label{fig:val-test}
+\end{figure}
+
+La AUC de validación está saturada: todas las configuraciones quedan entre 0.98 y 0.99 y su orden casi
+no anticipa el de test (Figura \ref{fig:val-test}, \(\rho\) entre −0.02 y 0.30). Con selección por
+validación, kernel PCA eligió \(k\) = 16 y γ = 10·γ0 y quedó por debajo de PCA, cuando a igual capacidad lo
+supera: dos de los aportes habrían cambiado de signo según cómo se eligieran los hiperparámetros.
+
+La Tabla \ref{tab:brecha} explica la causa. La validación sale del mismo archivo que el train, no tiene
+tipos de ataque nuevos y contiene muchos ataques \textbf{triviales} por un atajo del preprocesamiento: el
+\emph{one-hot} se ajusta solo con normales, de modo que un registro con un servicio, protocolo o \emph{flag} que
+ningún normal usó queda con su bloque en ceros y su error de reconstrucción se dispara, sin importar el
+modelo. Así ocurre con el 31.2 \% de los ataques de validación, pero solo con el
+10.5 \% de los de test, donde además el 29.2 \% de los ataques pertenece a
+tipos nunca vistos. La validación mide, en buena parte, ese atajo, y no la capacidad de generalizar a
+ataques nuevos. Esto también explica por qué XGBoost era casi perfecto en validación (MCC 0.998) y caía a
+0.636 en test.
+
+\textbf{Prevención de fuga.} Ningún hiperparámetro ni umbral se eligió con el test. El análisis a igual
+capacidad no elige nada: fija γ y alpha de antemano, recorre toda la rejilla y promedia. La corrección
+del atajo (por ejemplo, agrupar categorías raras) se dejó como trabajo futuro, porque decidirla después
+de ver el test sería un grado de libertad indebido. Sí hay que reconocer que el diseño a igual capacidad
+se adoptó después de observar la brecha.
+
+\hypertarget{sec:latente}{%
+\subsection{Espacio latente y desempeño por categoría}\label{sec:latente}}
+
+\begin{figure}[!htb]
+\includegraphics[width=1\linewidth,]{figuras/aportes_umap} \caption{Proyección UMAP del espacio comprimido de cada método (configuración elegida por validación) para 6000 registros de test estratificados por categoría. UMAP no usa las etiquetas: solo colorean los puntos.}\label{fig:umap}
+\end{figure}
+
+La Figura \ref{fig:umap} muestra cómo cada método organiza el tráfico. En los tres, los normales forman
+uno o pocos grupos compactos y los ataques DoS y Probe quedan en regiones propias, lejos de ellos: son los
+ataques fáciles, coherentes con AUC por categoría por encima de 0.96 (Figura \ref{fig:categorias}). Los
+ataques R2L y U2R, en cambio, forman filamentos que se tocan con grupos de normales, y en el AE aparecen
+pegados a los normales en varias zonas. Estos ataques imitan conexiones legítimas (accesos remotos,
+escalamiento de privilegios dentro de una sesión), por lo que no hay un espacio de reconstrucción que
+los separe del tráfico normal. Las distancias de UMAP están deformadas, por lo que la figura se lee como
+evidencia cualitativa; la cuantitativa son las métricas.
+
+\begin{figure}[!htb]
+\includegraphics{informe_final_files/figure-latex/categorias-1} \caption{AUC en test de normales contra cada categoría de ataque, promedio sobre $k$ con los tres métodos ajustados con la misma submuestra. No depende del umbral.}\label{fig:categorias}
+\end{figure}
+
+\hypertarget{sec:fallas}{%
+\section{Análisis de fallas}\label{sec:fallas}}
+
+Los errores se concentran en dos subgrupos. \textbf{R2L} es la categoría peor detectada por todos los métodos
+(AUC entre 0.88 y 0.91, Figura \ref{fig:categorias}) y es la única donde PCA supera a los métodos no
+lineales: el AE reconstruye bien estos ataques porque se parecen a sesiones legítimas. \textbf{U2R} tiene pocas
+muestras en test (unas 200), por lo que sus diferencias entre métodos, aunque favorecen a kernel PCA,
+deben leerse con cautela. En los \textbf{ataques nuevos}, el AE con datos completos queda por debajo de PCA y
+de kernel PCA, lo que contradice la idea de que la red generaliza mejor ante lo desconocido.
+
+Estas fallas son, ante todo, del \textbf{planteamiento}: un detector por error de reconstrucción solo ve como
+anómalo lo que se reconstruye mal, y un ataque que imita tráfico normal se reconstruye bien con
+cualquier modelo. También hay una falla de los \textbf{datos}: parte del desempeño medido viene del atajo del
+\emph{one-hot}, que en un despliegue real convertiría cualquier servicio nuevo pero legítimo en alarma. En un
+sistema de detección esto tiene dos costos distintos: los R2L no detectados son intrusiones que pasan
+silenciosas, y los servicios nuevos marcados como ataque son falsas alarmas que alimentan la fatiga de
+los analistas.
+
+\hypertarget{sec:dictamen}{%
+\section{Modelo final y dictamen sobre la profundidad}\label{sec:dictamen}}
+
+\begin{table}[!h]
+\centering
+\caption{\label{tab:costo}Desempeño a igual capacidad y costo de la configuración seleccionada, medidos en la misma GPU.}
+\centering
+\fontsize{8}{10}\selectfont
+\begin{tabular}[t]{lrrrrr}
+\toprule
+Método & AUC & TPR@1 \% & Ajuste (s) & Inferencia (µs/registro) & Memoria (MB)\\
+\midrule
+PCA (completo) & 0.955 & 0.358 & 0.0224 & 0.244 & 0.00154\\
+PCA (submuestra) & 0.955 & 0.363 & 0.0105 & 0.258 & 0.00154\\
+Kernel PCA (submuestra) & 0.961 & 0.469 & 9.88 & 29.4 & 7.48\\
+AE (3,w) (completo) & 0.953 & 0.483 & 79.7 & 54.5 & 0.0423\\
+AE (3,w) (submuestra) & 0.954 & 0.505 & 105 & 20.5 & 0.0413\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[!htb]
+
+{\centering \includegraphics[width=0.58\linewidth,]{figuras/aportes_radar} 
+
+}
+
+\caption{Perfil de cada método con la submuestra: desempeño en escala absoluta y costos en veces el de PCA (escala logarítmica; el borde es 1× y el centro, 10 000×). Más afuera es mejor; el área no es una medida de calidad.}\label{fig:radar}
+\end{figure}
+
+El costo separa a los métodos mucho más que el desempeño (Tabla \ref{tab:costo} y Figura
+\ref{fig:radar}). PCA se ajusta en 0.022 s, puntúa en
+0.24 µs por registro y guarda 385
+valores. Kernel PCA mejora la AUC en 0.005 y la TPR a FPR = 1 \% en
+0.106, a cambio de unas 100 veces más latencia y 5000 veces más memoria, que
+además crecen con la submuestra porque debe guardarla completa. El AE no mejora la AUC de PCA y gana en
+TPR a FPR = 1 \% (0.125), con 80 a 105 s de entrenamiento y entre 20 y 55 µs por
+registro.
+
+\textbf{Modelo final.} Para un detector en tiempo real se elige \textbf{PCA}, ajustado con los datos completos:
+iguala la AUC del \emph{autoencoder}, es determinista (no depende de semillas), se ajusta en milisegundos y
+su latencia es dos órdenes de magnitud menor. Su debilidad es el régimen de muy pocas falsas alarmas;
+si el punto de operación exige FPR cercanas al 1 \%, kernel PCA es la alternativa con mejor
+compromiso, y el AE no ofrece una ventaja que justifique su costo ni su variabilidad entre semillas.
+
+\begin{pendiente}
+\textbf{¿Se justificaba la arquitectura profunda?} No para este problema. A igual capacidad, el autoencoder no supera a PCA en AUC, pierde frente a kernel PCA con los mismos datos y no mejora al recibir más datos. La profundidad tampoco cambia el resultado. Su única ventaja, la detección con FPR muy baja, la iguala kernel PCA con una solución cerrada.
+
+La auditoría muestra además que buena parte de lo que parecía aprendizaje era un atajo del preprocesamiento que comparten todos los métodos, y que los ataques que de verdad importan (R2L y U2R) imitan tráfico normal y se escapan a cualquier detector por reconstrucción. En NSL-KDD, la estructura del tráfico normal es lo bastante simple para que una proyección lineal la capture casi por completo.
+\end{pendiente}
+
+\hypertarget{sec:limitaciones}{%
+\section{Limitaciones y proyección}\label{sec:limitaciones}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Un solo conjunto de datos.} Los resultados son de NSL-KDD, un conjunto antiguo y sintético; no se
+  hizo el traslado a un contexto local por falta de datos colombianos públicos.
+\item
+  \textbf{Incertidumbre incompleta.} Los intervalos del \emph{bootstrap} solo recogen la variación de la muestra de
+  test, no la de las semillas del AE (desviación de 0.002 a 0.02 en AUC) ni la de otros \emph{splits}.
+\item
+  \textbf{Ventajas en la selección.} El AE elige su punto de parada y su ancho con las etiquetas de
+  validación; kernel PCA tiene γ y alpha fijados a priori sin análisis de sensibilidad.
+\item
+  \textbf{Umbrales.} La TPR a FPR fija calcula el umbral con los normales de test: describe puntos de la curva
+  ROC, no un umbral desplegable.
+\item
+  \textbf{Costos.} Las implementaciones difieren y kernel PCA se midió con una sola repetición.
+\end{itemize}
+
+\textbf{Trabajo futuro.} Repetir la comparación sin el atajo del \emph{one-hot} (agrupando categorías infrecuentes)
+para verificar si el orden de los métodos se mantiene; construir una validación que simule ataques
+nuevos dejando tipos de ataque fuera del train; e incluir la variación entre semillas en el \emph{bootstrap}.
+Llevar el detector a producción exigiría además monitorear la deriva del tráfico normal, porque un
+modelo de reconstrucción marca como ataque cualquier cambio legítimo en él, y reajustar el umbral de
+forma periódica.
+
+\textbf{Reproducibilidad.} El código está en \texttt{experimento\_aportes.ipynb} (semillas 42 a 46; submuestra con
+semilla 42) y los resultados en \texttt{resultados/aportes/}; las figuras de este informe se generan desde esos
+archivos. Se usaron herramientas de inteligencia artificial generativa (Claude Opus 5.5) como apoyo en
+la implementación de algunas gráficas, la revisión de la redacción y la búsqueda de literatura; todas
+las decisiones técnicas fueron revisadas y pueden sustentarse.
+
+\hypertarget{referencias}{%
+\section*{Referencias}\label{referencias}}
+\addcontentsline{toc}{section}{Referencias}
+
+\hypertarget{refs}{}
+\begin{CSLReferences}{1}{0}
+\leavevmode\vadjust pre{\hypertarget{ref-brionesLascano2026}{}}%
+Briones-Lascano, T., Vergara-Lozano, V., \& Miranda-Andrade, A. (2026). Strategic Cyber Intelligence with Advanced Analytics in Latin America: A Perspective. \emph{Frontiers in Big Data}, \emph{9}, 1733733. \url{https://doi.org/10.3389/fdata.2026.1733733}
+
+\leavevmode\vadjust pre{\hypertarget{ref-pavonUnda2022}{}}%
+Pavón Unda, E., Guaytarilla, L. F., Cueva, C., \& Durango, K. (2022). Perspectivas sobre la ciberseguridad y ciberdefensa en América Latina. \emph{Athenea Journal}, \emph{3}(9), 26-37. \url{https://doi.org/10.47460/athenea.v3i9.43}
+
+\leavevmode\vadjust pre{\hypertarget{ref-songAutoencoders2021}{}}%
+Song, Y., Hyun, S., \& Cheong, Y.-G. (2021). Analysis of Autoencoders for Network Intrusion Detection. \emph{Sensors}, \emph{21}(13), 4294. \url{https://doi.org/10.3390/s21134294}
+
+\end{CSLReferences}
+
+\end{document}
